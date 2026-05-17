@@ -1,457 +1,1144 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ANDRÉMICON - O Vendedor Implacável</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#1a1e38"/>
+<title>SESÉ – Sala de Reunião</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka:wght@400;600;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;overflow:hidden;touch-action:none;}
-body{background:#1a0a0a;font-family:'Fredoka',sans-serif;user-select:none;-webkit-user-select:none;}
-canvas{display:block;width:100%;height:100%;}
-#ui{position:absolute;top:0;left:0;width:100%;pointer-events:none;display:flex;justify-content:space-between;padding:8px 12px;z-index:10;}
-#score,#timer{font-family:'Bangers',cursive;font-size:clamp(18px,4vw,28px);color:#fff;text-shadow:2px 2px 0 #8b0000,0 0 10px rgba(255,0,0,.5);letter-spacing:2px;}
-#startScreen,#gameOver{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#cc0000 0%,#880000 60%,#440000 100%);z-index:100;gap:10px;overflow:hidden;}
-#gameOver{display:none;}
-.title{font-family:'Bangers',cursive;font-size:clamp(40px,10vw,72px);color:#fff;text-shadow:3px 3px 0 #000,0 0 30px rgba(255,200,0,.4);letter-spacing:4px;animation:pulse 1.5s ease-in-out infinite;}
-.slogan{font-family:'Bangers',cursive;font-size:clamp(20px,5vw,32px);color:#ffd700;text-shadow:2px 2px 0 #000;}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.subtitle{font-size:clamp(14px,3vw,20px);color:#ffcccc;max-width:90%;text-align:center;line-height:1.4;padding:0 10px;}
-.btn{pointer-events:all;cursor:pointer;margin-top:12px;font-family:'Bangers',cursive;font-size:clamp(24px,6vw,36px);color:#fff;background:linear-gradient(180deg,#cc0000,#880000);border:3px solid #ff4444;border-radius:12px;padding:10px 32px;letter-spacing:3px;text-shadow:2px 2px 0 #000;box-shadow:0 6px 20px rgba(255,0,0,.4);transition:transform .1s;-webkit-tap-highlight-color:transparent;}
-.btn:active{transform:scale(.95);}
-#finalScore{font-family:'Bangers',cursive;font-size:clamp(32px,8vw,48px);color:#ffd700;}
-.instructions{font-size:clamp(11px,2.5vw,15px);color:#ffaaaa;margin-top:2px;}
-.runner{position:absolute;font-size:clamp(24px,5vw,36px);animation:runAcross linear infinite;pointer-events:none;z-index:0;filter:drop-shadow(2px 2px 2px rgba(0,0,0,.5));}
-@keyframes runAcross{0%{transform:translateX(100vw) scaleX(-1)}100%{transform:translateX(-120vw) scaleX(-1)}}
-.runner:nth-child(1){top:2%;animation-duration:4s;}
-.runner:nth-child(2){top:7%;animation-duration:5.5s;animation-delay:1s;}
-.runner:nth-child(3){top:12%;animation-duration:3.8s;animation-delay:.3s;}
-.runner:nth-child(4){top:78%;animation-duration:6s;animation-delay:2s;}
-.runner:nth-child(5){top:83%;animation-duration:4.5s;animation-delay:.8s;}
-.runner:nth-child(6){top:88%;animation-duration:3.5s;animation-delay:1.5s;}
-.runner:nth-child(7){top:4%;animation-duration:5s;animation-delay:2.5s;}
-.runner:nth-child(8){top:93%;animation-duration:4.2s;animation-delay:.5s;}
-.speech-bubble{position:absolute;font-size:clamp(9px,2vw,13px);color:#fff;font-family:'Fredoka',sans-serif;background:rgba(0,0,0,.6);padding:2px 6px;border-radius:8px;white-space:nowrap;top:-20px;left:50%;transform:translateX(-50%) scaleX(-1);}
-.start-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;}
-#mobileControls{display:none;position:absolute;bottom:0;left:0;width:100%;height:45%;z-index:20;pointer-events:none;}
-#joystickArea{position:absolute;bottom:20px;left:20px;width:130px;height:130px;pointer-events:all;border-radius:50%;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);}
-#joystickKnob{position:absolute;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.3);top:40px;left:40px;}
-#attackBtn{position:absolute;bottom:30px;right:20px;width:90px;height:90px;border-radius:50%;background:rgba(204,0,0,.6);border:3px solid rgba(255,68,68,.7);pointer-events:all;display:flex;align-items:center;justify-content:center;font-family:'Bangers',cursive;font-size:18px;color:#fff;text-shadow:1px 1px 0 #000;-webkit-tap-highlight-color:transparent;}
+:root{
+  --blue:#5068F0;--blue-dk:#3a50d4;--blue-lt:#edf0fe;--blue-glow:rgba(80,104,240,.18);
+  --navy:#1a1e38;--navy2:#252b4e;
+  --bg:#F4F6FB;--white:#fff;
+  --g100:#f4f6fb;--g150:#eceef6;--g200:#e0e3f0;--g300:#c8cce0;--g400:#9099be;--g600:#5a6180;--g700:#3d4466;--g900:#1a1e38;
+  --ok:#22b07a;--ok-lt:#e6f7f0;
+  --red:#e04040;--red-lt:#fde9e9;
+  --warn:#e88c1a;--warn-lt:#fef4e2;
+  --r:14px;--r-sm:10px;--r-lg:20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);display:flex;flex-direction:column}
+
+/* ═══ HEADER ═══ */
+header{
+  background:var(--navy);padding:14px 20px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;z-index:50;
+}
+.logo-wrap{display:flex;align-items:center;gap:12px}
+.logo-svg{height:34px;display:block}
+.hd-room{
+  font-size:12px;font-weight:600;color:rgba(255,255,255,.45);
+  letter-spacing:.5px;text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;
+}
+.hd-room strong{color:rgba(255,255,255,.85);font-weight:600}
+
+/* ═══ TAB CONTENT ═══ */
+.tabs-wrap{
+  flex:1;overflow:hidden;background:var(--bg);
+  border-radius:24px 24px 0 0;margin-top:2px;
+  display:flex;flex-direction:column;
+}
+.tab-pane{
+  display:none;flex:1;overflow-y:auto;
+  padding:0 0 12px;
+  -webkit-overflow-scrolling:touch;
+}
+.tab-pane.active{display:flex;flex-direction:column}
+
+/* ═══ BOTTOM NAV ═══ */
+.bottom-nav{
+  background:var(--navy);padding:10px 6px max(env(safe-area-inset-bottom),10px);
+  display:flex;gap:2px;flex-shrink:0;
+}
+.nav-btn{
+  flex:1;border:none;background:transparent;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px;border-radius:12px;transition:background .2s;
+}
+.nav-btn svg{width:20px;height:20px;color:rgba(255,255,255,.38);transition:color .2s}
+.nav-btn span{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:rgba(255,255,255,.38);letter-spacing:.3px;transition:color .2s}
+.nav-btn.active svg{color:var(--blue)}
+.nav-btn.active span{color:var(--blue)}
+.nav-btn:hover{background:rgba(255,255,255,.06)}
+
+/* ═══ STATUS TAB ═══ */
+.clock-bar{
+  background:var(--navy);padding:16px 22px 22px;
+  display:flex;justify-content:space-between;align-items:flex-end;
+}
+.clock-time{
+  font-family:'Barlow Condensed',sans-serif;font-style:italic;
+  font-size:52px;color:#fff;line-height:1;letter-spacing:-1px;
+}
+.clock-date{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:6px;font-weight:500}
+
+.status-card{
+  background:var(--white);border-radius:var(--r-lg) var(--r-lg) var(--r) var(--r);
+  margin:0 14px;margin-top:-10px;
+  box-shadow:0 4px 28px rgba(80,104,240,.14);
+  border:1.5px solid var(--g200);
+  padding:22px 22px 18px;
+  position:relative;overflow:hidden;
+}
+.status-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:var(--ok);transition:background .4s;
+}
+.status-card.busy::before{background:var(--red)}
+.status-card.reserved::before{background:var(--warn)}
+
+.sc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.sc-name{font-family:'Barlow Condensed',sans-serif;font-style:italic;font-size:28px;color:var(--g900);line-height:1}
+.sc-floor{font-size:12px;color:var(--g400);margin-top:4px;display:flex;align-items:center;gap:4px}
+.sc-floor svg{width:11px;height:11px}
+
+.status-pill{
+  padding:8px 18px;border-radius:30px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.status-pill .dot{width:7px;height:7px;border-radius:50%}
+.pill-ok  {background:var(--ok-lt);color:var(--ok)}
+.pill-ok  .dot{background:var(--ok);animation:pulse-ok 2s infinite}
+.pill-red {background:var(--red-lt);color:var(--red)}
+.pill-red .dot{background:var(--red);animation:pulse-red 1.4s infinite}
+.pill-warn{background:var(--warn-lt);color:var(--warn)}
+.pill-warn .dot{background:var(--warn)}
+@keyframes pulse-ok  {0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes pulse-red {0%,100%{box-shadow:0 0 0 0 rgba(224,64,64,.6)}70%{box-shadow:0 0 0 6px rgba(224,64,64,0)}}
+
+.sc-meta{display:flex;gap:20px;margin-top:14px;padding-top:14px;border-top:1px solid var(--g150)}
+.sc-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--g600)}
+.sc-meta-item svg{width:13px;height:13px;color:var(--blue)}
+
+/* current / next meeting info */
+.meeting-info-card{
+  margin:12px 14px 0;border-radius:var(--r);
+  border:1.5px solid;padding:14px 16px;
+}
+.mic-now {background:#fde9e9;border-color:#f5c0c0}
+.mic-next{background:var(--blue-lt);border-color:#c4ccf8}
+.mic-empty{background:var(--g100);border-color:var(--g200)}
+.mic-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
+.mic-now  .mic-label{color:var(--red)}
+.mic-next .mic-label{color:var(--blue)}
+.mic-empty .mic-label{color:var(--g400)}
+.mic-title{font-size:15px;font-weight:700;color:var(--g900);line-height:1.2}
+.mic-sub{font-size:12px;color:var(--g400);margin-top:3px;display:flex;align-items:center;gap:5px}
+.mic-sub svg{width:11px;height:11px}
+
+/* quick status buttons */
+.quick-btns{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  margin:12px 14px 0;
+}
+.qbtn{
+  padding:10px 6px;border-radius:var(--r-sm);border:none;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:all .2s;
+}
+.qbtn svg{width:18px;height:18px}
+.qbtn-ok  {background:var(--ok-lt);color:var(--ok)}
+.qbtn-ok:hover,.qbtn-ok.act  {background:var(--ok);color:#fff}
+.qbtn-red {background:var(--red-lt);color:var(--red)}
+.qbtn-red:hover,.qbtn-red.act {background:var(--red);color:#fff}
+.qbtn-warn{background:var(--warn-lt);color:var(--warn)}
+.qbtn-warn:hover,.qbtn-warn.act{background:var(--warn);color:#fff}
+
+/* ═══ AGENDA TAB ═══ */
+.agenda-header{
+  background:var(--white);padding:18px 20px 14px;
+  border-bottom:1px solid var(--g150);
+  display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:10;
+}
+.agenda-title{font-family:'Barlow Condensed',sans-serif;font-style:italic;font-size:24px;color:var(--g900)}
+.btn-add-meeting{
+  display:flex;align-items:center;gap:6px;padding:9px 16px;
+  background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 14px rgba(80,104,240,.32);transition:all .2s;
+}
+.btn-add-meeting:hover{background:var(--blue-dk);transform:translateY(-1px)}
+.btn-add-meeting svg{width:14px;height:14px}
+
+.date-group{padding:14px 16px 0}
+.dg-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;
+  color:var(--g400);margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.dg-label::after{content:'';flex:1;height:1px;background:var(--g200)}
+
+.meeting-card{
+  background:var(--white);border-radius:var(--r);
+  border:1.5px solid var(--g200);margin-bottom:8px;overflow:hidden;
+  display:flex;gap:0;
+}
+.meeting-card.cancelled{opacity:.55}
+.mc-stripe{width:4px;flex-shrink:0;background:var(--blue);transition:background .3s}
+.meeting-card.cancelled .mc-stripe{background:var(--g300)}
+.mc-body{flex:1;padding:13px 14px;min-width:0}
+.mc-time{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.mc-time svg{width:12px;height:12px}
+.meeting-card.cancelled .mc-time{color:var(--g400)}
+.mc-title{font-size:15px;font-weight:700;color:var(--g900);line-height:1.2}
+.mc-organizer{font-size:12px;color:var(--g400);margin-top:2px;display:flex;align-items:center;gap:4px}
+.mc-organizer svg{width:11px;height:11px}
+.mc-notes{font-size:11px;color:var(--g600);margin-top:6px;font-style:italic}
+.mc-status-badge{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:2px 8px;border-radius:10px;display:inline-block;margin-top:6px;
+}
+.badge-sched{background:var(--blue-lt);color:var(--blue)}
+.badge-cancel{background:var(--g150);color:var(--g400)}
+.badge-done{background:var(--ok-lt);color:var(--ok)}
+.badge-now{background:var(--red-lt);color:var(--red)}
+
+.mc-actions{padding:8px 14px 12px;display:flex;gap:6px}
+.btn-cancel-meeting{
+  padding:7px 14px;border-radius:8px;border:none;
+  background:var(--red-lt);color:var(--red);
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:4px;transition:all .2s;
+}
+.btn-cancel-meeting:hover{background:var(--red);color:#fff}
+.btn-cancel-meeting svg{width:12px;height:12px}
+
+.empty-agenda{
+  text-align:center;padding:48px 24px;color:var(--g300);
+}
+.empty-agenda svg{width:44px;height:44px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto}
+.empty-agenda p{font-size:14px;color:var(--g400)}
+
+/* ═══ QR TAB ═══ */
+.qr-page{
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px 20px 24px;flex:1;
+}
+.qr-box{
+  background:var(--white);border-radius:var(--r-lg);
+  padding:28px;box-shadow:0 8px 40px rgba(80,104,240,.14);
+  border:1.5px solid var(--g200);
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  width:100%;max-width:320px;
+}
+.qr-logo-top{margin-bottom:16px}
+.qr-img{
+  width:200px;height:200px;border-radius:12px;
+  background:var(--g100);display:flex;align-items:center;justify-content:center;
+}
+.qr-img img{width:200px;height:200px;border-radius:10px;display:block}
+.qr-room-name{
+  font-family:'Barlow Condensed',sans-serif;font-style:italic;
+  font-size:24px;color:var(--g900);margin-top:16px;text-align:center;
+}
+.qr-room-floor{font-size:12px;color:var(--g400);text-align:center;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:4px}
+.qr-room-floor svg{width:11px;height:11px}
+.qr-divider{width:100%;height:1px;background:var(--g150);margin:16px 0}
+.qr-instructions{font-size:12px;color:var(--g400);text-align:center;line-height:1.5}
+
+.qr-actions{display:flex;gap:10px;margin-top:20px;width:100%;max-width:320px}
+.btn-qr{
+  flex:1;padding:12px;border-radius:var(--r-sm);border:none;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;
+}
+.btn-qr svg{width:15px;height:15px}
+.btn-qr-print{background:var(--blue-lt);color:var(--blue)}
+.btn-qr-print:hover{background:var(--blue);color:#fff}
+.btn-qr-copy{background:var(--g150);color:var(--g700)}
+.btn-qr-copy:hover{background:var(--g300);color:var(--g900)}
+
+/* ═══ EDIT TAB ═══ */
+.edit-form{padding:20px 16px 32px}
+.section-title{
+  font-family:'Barlow Condensed',sans-serif;font-style:italic;
+  font-size:20px;color:var(--g900);margin-bottom:14px;padding-bottom:10px;
+  border-bottom:1.5px solid var(--g200);
+}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g600)}
+.fc{
+  padding:11px 14px;border:1.5px solid var(--g200);border-radius:var(--r-sm);
+  font-family:'DM Sans',sans-serif;font-size:14px;color:var(--g900);background:var(--white);
+  outline:none;width:100%;transition:border-color .2s,box-shadow .2s;
+}
+.fc:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow)}
+textarea.fc{resize:vertical;min-height:72px}
+.frow{display:flex;gap:10px}
+.frow .fg{flex:1}
+.res-checks{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.rc{
+  padding:6px 12px;border:1.5px solid var(--g200);border-radius:8px;
+  cursor:pointer;font-size:12px;font-weight:600;color:var(--g600);
+  transition:all .18s;user-select:none;
+}
+.rc input{display:none}
+.rc.on{border-color:var(--blue);background:var(--blue-lt);color:var(--blue)}
+.btn-save-room{
+  width:100%;padding:13px;border-radius:var(--r-sm);border:none;
+  background:var(--blue);color:#fff;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;
+  box-shadow:0 4px 16px rgba(80,104,240,.30);transition:all .2s;
+}
+.btn-save-room:hover{background:var(--blue-dk);transform:translateY(-1px)}
+
+/* ═══ MODAL ═══ */
+.overlay{
+  position:fixed;inset:0;background:rgba(26,30,56,.6);
+  backdrop-filter:blur(6px);z-index:999;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.overlay.open{opacity:1;pointer-events:all}
+.modal-sheet{
+  background:var(--white);border-radius:24px 24px 0 0;
+  width:100%;max-width:540px;max-height:92vh;overflow-y:auto;
+  box-shadow:0 -8px 40px rgba(80,104,240,.18);
+  transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+.overlay.open .modal-sheet{transform:translateY(0)}
+.modal-pill{width:40px;height:4px;background:var(--g200);border-radius:2px;margin:12px auto 0}
+.modal-hd{
+  padding:16px 22px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-style:italic;font-size:22px;color:var(--g900)}
+.btn-mclose{
+  width:32px;height:32px;border-radius:8px;border:none;
+  background:var(--g100);color:var(--g400);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+}
+.btn-mclose:hover{background:var(--g200);color:var(--g900)}
+.modal-body{padding:18px 22px}
+.modal-footer{padding:0 22px 28px;display:flex;gap:8px}
+.btn-mcancel{
+  flex:1;padding:12px;border-radius:var(--r-sm);border:1.5px solid var(--g200);
+  background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  color:var(--g600);cursor:pointer;
+}
+.btn-msave{
+  flex:2;padding:12px;border-radius:var(--r-sm);border:none;
+  background:var(--blue);color:#fff;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 14px rgba(80,104,240,.30);transition:all .2s;
+}
+.btn-msave:hover{background:var(--blue-dk)}
+.btn-mdelete{
+  width:100%;padding:12px;border-radius:var(--r-sm);border:none;
+  background:var(--red);color:#fff;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;
+}
+.btn-mdelete:hover{background:#c43535}
+
+/* ═══ CONFIRM MODAL CENTER ═══ */
+.overlay-center{
+  position:fixed;inset:0;background:rgba(26,30,56,.6);
+  backdrop-filter:blur(6px);z-index:999;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.overlay-center.open{opacity:1;pointer-events:all}
+.confirm-box{
+  background:var(--white);border-radius:var(--r-lg);
+  padding:32px 28px;width:88%;max-width:340px;text-align:center;
+  box-shadow:0 12px 48px rgba(80,104,240,.22);
+  transform:scale(.92);opacity:0;transition:all .28s cubic-bezier(.34,1.56,.64,1);
+}
+.overlay-center.open .confirm-box{transform:scale(1);opacity:1}
+.cbox-icon{
+  width:56px;height:56px;border-radius:50%;background:var(--red-lt);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 14px;
+}
+.cbox-icon svg{width:24px;height:24px;color:var(--red)}
+.cbox-title{font-family:'Barlow Condensed',sans-serif;font-style:italic;font-size:22px;color:var(--g900);margin-bottom:6px}
+.cbox-msg{font-size:13px;color:var(--g400);margin-bottom:22px;line-height:1.5}
+.cbox-btns{display:flex;gap:8px}
+.cbox-no {flex:1;padding:11px;border-radius:var(--r-sm);border:1.5px solid var(--g200);background:transparent;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;color:var(--g600);cursor:pointer}
+.cbox-yes{flex:1;padding:11px;border-radius:var(--r-sm);border:none;background:var(--red);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:background .2s}
+.cbox-yes:hover{background:#c43535}
+
+/* ═══ TOAST ═══ */
+#toasts{position:fixed;bottom:90px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{
+  background:var(--navy);color:#fff;padding:11px 16px;border-radius:12px;
+  font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,.22);
+  animation:tin .3s ease,tout .4s ease 2.6s forwards;max-width:280px;
+}
+.toast svg{width:14px;height:14px;flex-shrink:0}
+.toast.ok  {border-left:3px solid var(--ok)}
+.toast.info{border-left:3px solid var(--blue)}
+.toast.err {border-left:3px solid var(--red)}
+@keyframes tin  {from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes tout {from{opacity:1}to{opacity:0;transform:translateX(24px)}}
+
+/* ═══ PRINT ═══ */
+@media print{
+  body *{visibility:hidden}
+  #print-area,#print-area *{visibility:visible}
+  #print-area{
+    position:fixed;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;background:#fff;
+    gap:16px;padding:40px;
+  }
+}
 </style>
 </head>
 <body>
-<div id="ui"><div id="score">VENDAS: 0</div><div id="timer">⏱ 60s</div></div>
 
-<div id="startScreen">
-  <div class="runner"><span class="speech-bubble">ANÃO FDP!</span>🏃‍♀️</div>
-  <div class="runner"><span class="speech-bubble">SAI FORA VIADO!</span>👵💨</div>
-  <div class="runner"><span class="speech-bubble">FOGE DELE!</span>🧒💨</div>
-  <div class="runner"><span class="speech-bubble">CONSÓRCIO NÃO!</span>👩🏃‍♀️</div>
-  <div class="runner"><span class="speech-bubble">VAI SE FUDE ANÃO!</span>🧓💨</div>
-  <div class="runner"><span class="speech-bubble">CORRE CARALHO!</span>🏃‍♂️💨</div>
-  <div class="runner"><span class="speech-bubble">SAI PRA LÁ BAIXINHO!</span>👦🏃</div>
-  <div class="runner"><span class="speech-bubble">PUTA QUE PARIU!</span>👩‍🦳💨</div>
-  <div class="start-content">
-    <div class="title">ANDRÉMICON</div>
-    <div class="slogan">É LÓGICO QUE DÁ!</div>
-    <div class="subtitle">Anão FDP saiu da loja e não vai parar até vender consórcio pra TODO MUNDO!<br>Velhinhas, crianças, torcedores... NINGUÉM ESCAPA!</div>
-    <div class="instructions">🎮 WASD/SETAS = mover | ESPAÇO = vender!</div>
-    <div class="instructions">📱 Joystick + Botão vermelho no celular</div>
-    <button class="btn" onclick="startGame()">COMEÇAR A VENDER!</button>
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap">
+    <svg class="logo-svg" viewBox="0 0 200 46" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="sp" patternUnits="userSpaceOnUse" x="0" y="0" width="200" height="11">
+          <rect width="200" height="7.5" fill="#5068F0"/>
+        </pattern>
+        <clipPath id="sc">
+          <text x="4" y="42" font-family="'Barlow Condensed',sans-serif" font-style="italic" font-weight="800" font-size="50" letter-spacing="1">SESÉ</text>
+        </clipPath>
+      </defs>
+      <rect width="200" height="46" fill="url(#sp)" clip-path="url(#sc)"/>
+    </svg>
+  </div>
+  <div class="hd-room">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:rgba(255,255,255,.35)"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    <strong id="hd-name">Sala Conecta</strong>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+
+  <!-- ─── STATUS ─── -->
+  <div class="tab-pane active" id="tab-status">
+    <div class="clock-bar">
+      <div>
+        <div class="clock-date" id="clock-date">Carregando…</div>
+        <div class="clock-time" id="clock-time">--:--</div>
+      </div>
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+
+    <div class="status-card" id="status-card">
+      <div class="sc-top">
+        <div>
+          <div class="sc-name" id="sc-name">Sala Conecta</div>
+          <div class="sc-floor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="sc-floor">1º Andar</span>
+          </div>
+        </div>
+        <div class="status-pill" id="status-pill">
+          <span class="dot"></span>
+          <span id="status-label">Disponível</span>
+        </div>
+      </div>
+      <div class="sc-meta">
+        <div class="sc-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span id="sc-cap">12 pessoas</span>
+        </div>
+        <div class="sc-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="sc-resp">Ana Paula</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="status-meeting-now"></div>
+    <div id="status-meeting-next"></div>
+
+    <div style="padding:4px 14px 0">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--g400);margin-bottom:8px">Definir status</div>
+      <div class="quick-btns">
+        <button class="qbtn qbtn-ok" id="qb-ok" onclick="setStatus('free')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Disponível
+        </button>
+        <button class="qbtn qbtn-red" id="qb-busy" onclick="setStatus('busy')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          Ocupada
+        </button>
+        <button class="qbtn qbtn-warn" id="qb-res" onclick="setStatus('reserved')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Reservada
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── AGENDA ─── -->
+  <div class="tab-pane" id="tab-agenda">
+    <div class="agenda-header">
+      <div class="agenda-title">Agenda de Reuniões</div>
+      <button class="btn-add-meeting" onclick="openAddMeeting()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agendar
+      </button>
+    </div>
+    <div id="agenda-list"></div>
+  </div>
+
+  <!-- ─── QR CODE ─── -->
+  <div class="tab-pane" id="tab-qr">
+    <div class="qr-page">
+      <div class="qr-box">
+        <div class="qr-logo-top">
+          <svg viewBox="0 0 160 36" width="120" height="28" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="sp2" patternUnits="userSpaceOnUse" x="0" y="0" width="160" height="9">
+                <rect width="160" height="6" fill="#5068F0"/>
+              </pattern>
+              <clipPath id="sc2">
+                <text x="3" y="33" font-family="'Barlow Condensed',sans-serif" font-style="italic" font-weight="800" font-size="40" letter-spacing="1">SESÉ</text>
+              </clipPath>
+            </defs>
+            <rect width="160" height="36" fill="url(#sp2)" clip-path="url(#sc2)"/>
+          </svg>
+        </div>
+
+        <div class="qr-img" id="qr-img-wrap">
+          <img id="qr-img" src="" alt="QR Code"/>
+        </div>
+
+        <div class="qr-room-name" id="qr-room-name">Sala Conecta</div>
+        <div class="qr-room-floor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="qr-room-floor">1º Andar</span>
+        </div>
+        <div class="qr-divider"></div>
+        <div class="qr-instructions">
+          📱 Escaneie o QR Code para acessar<br/>
+          a agenda e o status desta sala
+        </div>
+      </div>
+
+      <div class="qr-actions">
+        <button class="btn-qr btn-qr-print" onclick="printQR()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir
+        </button>
+        <button class="btn-qr btn-qr-copy" onclick="copyLink()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Copiar link
+        </button>
+      </div>
+
+      <div style="font-size:11px;color:var(--g300);text-align:center;margin-top:12px;padding:0 20px;line-height:1.5">
+        Configure o link do app na aba <strong>Editar</strong> para o QR redirecionar corretamente.
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── EDITAR ─── -->
+  <div class="tab-pane" id="tab-edit">
+    <div class="edit-form">
+      <div class="section-title">Informações da Sala</div>
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Nome da sala *</label>
+          <input class="fc" id="e-name" type="text" placeholder="Ex: Sala Conecta"/>
+        </div>
+        <div class="fg" style="max-width:100px">
+          <label class="fl">Capacidade *</label>
+          <input class="fc" id="e-cap" type="number" min="1" placeholder="12"/>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Andar</label>
+          <select class="fc" id="e-floor">
+            <option>Térreo</option>
+            <option>1º Andar</option>
+            <option>2º Andar</option>
+            <option>3º Andar</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Responsável</label>
+          <input class="fc" id="e-resp" type="text" placeholder="Nome"/>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Recursos disponíveis</label>
+        <div class="res-checks" id="edit-res-checks"></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Observações</label>
+        <textarea class="fc" id="e-desc" placeholder="Informações adicionais…"></textarea>
+      </div>
+
+      <div class="section-title" style="margin-top:20px">Link do App (QR Code)</div>
+      <div class="fg">
+        <label class="fl">URL base</label>
+        <input class="fc" id="e-url" type="url" placeholder="https://seusite.com/sala"/>
+        <div style="font-size:11px;color:var(--g400);margin-top:4px">Esta URL será codificada no QR Code da sala</div>
+      </div>
+
+      <button class="btn-save-room" onclick="saveRoom()">
+        Salvar alterações
+      </button>
+    </div>
+  </div>
+
+</div><!-- /tabs-wrap -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-status" onclick="switchTab('status')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    <span>Status</span>
+  </button>
+  <button class="nav-btn" id="nav-agenda" onclick="switchTab('agenda')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>Agenda</span>
+  </button>
+  <button class="nav-btn" id="nav-qr" onclick="switchTab('qr')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="5" y="5" width="3" height="3"/><rect x="16" y="5" width="3" height="3"/><rect x="5" y="16" width="3" height="3"/><line x1="14" y1="14" x2="14" y2="14"/><line x1="14" y1="17" x2="14" y2="21"/><line x1="17" y1="14" x2="21" y2="14"/><line x1="21" y1="17" x2="21" y2="21"/><line x1="17" y1="17" x2="17" y2="17"/></svg>
+    <span>QR Code</span>
+  </button>
+  <button class="nav-btn" id="nav-edit" onclick="switchTab('edit')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>Editar</span>
+  </button>
+</nav>
+
+<!-- MODAL: AGENDAR REUNIÃO -->
+<div class="overlay" id="modal-meeting" onclick="if(event.target===this)closeModal('modal-meeting')">
+  <div class="modal-sheet">
+    <div class="modal-pill"></div>
+    <div class="modal-hd">
+      <span class="modal-title">Nova Reunião</span>
+      <button class="btn-mclose" onclick="closeModal('modal-meeting')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label class="fl">Título da reunião *</label>
+        <input class="fc" id="m-title" type="text" placeholder="Ex: Reunião de Planejamento"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Data *</label>
+        <input class="fc" id="m-date" type="date"/>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Início *</label>
+          <input class="fc" id="m-start" type="time"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Término *</label>
+          <input class="fc" id="m-end" type="time"/>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Responsável / Convocante</label>
+        <input class="fc" id="m-resp" type="text" placeholder="Nome"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Participantes</label>
+        <input class="fc" id="m-part" type="text" placeholder="Ex: Equipe Comercial, RH…"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Observações</label>
+        <textarea class="fc" id="m-notes" placeholder="Pauta, link de videoconferência…" style="min-height:60px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-mcancel" onclick="closeModal('modal-meeting')">Cancelar</button>
+      <button class="btn-msave" onclick="saveMeeting()">Confirmar Agendamento</button>
+    </div>
   </div>
 </div>
 
-<div id="gameOver">
-  <div class="title">FIM DE EXPEDIENTE!</div>
-  <div id="finalScore">0 VENDAS</div>
-  <div id="finalMsg" class="subtitle"></div>
-  <button class="btn" onclick="startGame()">TENTAR DE NOVO</button>
+<!-- MODAL: CONFIRMAR CANCELAMENTO -->
+<div class="overlay-center" id="modal-confirm">
+  <div class="confirm-box">
+    <div class="cbox-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="cbox-title">Cancelar reunião?</div>
+    <div class="cbox-msg" id="cbox-msg">A reunião será marcada como cancelada.</div>
+    <div class="cbox-btns">
+      <button class="cbox-no" onclick="closeModal('modal-confirm')">Não</button>
+      <button class="cbox-yes" onclick="doCancel()">Sim, cancelar</button>
+    </div>
+  </div>
 </div>
 
-<canvas id="c"></canvas>
-
-<div id="mobileControls">
-  <div id="joystickArea"><div id="joystickKnob"></div></div>
-  <div id="attackBtn">VENDER!</div>
+<!-- PRINT AREA -->
+<div id="print-area" style="display:none">
+  <svg viewBox="0 0 200 46" width="180" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="sp3" patternUnits="userSpaceOnUse" x="0" y="0" width="200" height="11">
+        <rect width="200" height="7.5" fill="#5068F0"/>
+      </pattern>
+      <clipPath id="sc3">
+        <text x="4" y="42" font-family="'Barlow Condensed',sans-serif" font-style="italic" font-weight="800" font-size="50" letter-spacing="1">SESÉ</text>
+      </clipPath>
+    </defs>
+    <rect width="200" height="46" fill="url(#sp3)" clip-path="url(#sc3)"/>
+  </svg>
+  <img id="print-qr" src="" style="width:240px;height:240px;border-radius:12px"/>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-style:italic;font-size:28px;color:#1a1e38;text-align:center" id="print-name">Sala Conecta</div>
+  <div style="font-size:13px;color:#9099be;text-align:center" id="print-floor">1º Andar</div>
+  <div style="font-size:12px;color:#c8cce0;margin-top:8px;text-align:center">📱 Escaneie para ver agenda e status</div>
 </div>
+
+<div id="toasts"></div>
 
 <script>
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-let W,H,isMobile='ontouchstart'in window||window.innerWidth<769;
-function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;isMobile='ontouchstart'in window||window.innerWidth<769;}
-resize();addEventListener('resize',resize);
+/* ══════════════ DATA ══════════════ */
+const RESOURCES = ['Projetor','TV/Monitor','Videoconferência','Quadro Branco','Wi-Fi','Ar-condicionado','Café/Água','Acessibilidade'];
 
-let player,people,particles,score,timer,gameRunning,lastTime,spawnTimer;
-const keys={};
-addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
-addEventListener('keyup',e=>keys[e.code]=false);
+function todayStr(){ return new Date().toISOString().slice(0,10) }
+function tomorrowStr(){ return new Date(Date.now()+86400000).toISOString().slice(0,10) }
 
-let joyDX=0,joyDY=0,joyActive=false;
-const joystickArea=document.getElementById('joystickArea'),joystickKnob=document.getElementById('joystickKnob'),attackBtn=document.getElementById('attackBtn');
-joystickArea.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();joyActive=true;handleJoy(e);},{passive:false});
-joystickArea.addEventListener('touchmove',e=>{e.preventDefault();e.stopPropagation();handleJoy(e);},{passive:false});
-joystickArea.addEventListener('touchend',e=>{e.preventDefault();joyActive=false;joyDX=0;joyDY=0;joystickKnob.style.top='40px';joystickKnob.style.left='40px';},{passive:false});
-function handleJoy(e){const rect=joystickArea.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2,t=e.touches[0];let dx=t.clientX-cx,dy=t.clientY-cy;const dist=Math.sqrt(dx*dx+dy*dy),maxR=rect.width/2-10;if(dist>maxR){dx=(dx/dist)*maxR;dy=(dy/dist)*maxR;}joyDX=dx/maxR;joyDY=dy/maxR;joystickKnob.style.left=(40+dx)+'px';joystickKnob.style.top=(40+dy)+'px';}
-let mobileAttack=false;
-attackBtn.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();mobileAttack=true;attackBtn.style.background='rgba(255,0,0,.8)';},{passive:false});
-attackBtn.addEventListener('touchend',e=>{e.preventDefault();attackBtn.style.background='rgba(204,0,0,.6)';},{passive:false});
-canvas.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
-canvas.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+let room = {
+  name:'Sala Conecta', cap:12, floor:'1º Andar',
+  resp:'Ana Paula', status:'free',
+  resources:['Projetor','Wi-Fi','Videoconferência'],
+  desc:'Sala principal para reuniões corporativas e clientes.',
+  appUrl: window.location.href.split('?')[0]
+};
 
-// === MUSIC SYSTEM ===
-let audioCtx=null,musicInterval=null,musicPlaying=false;
-function startMusic(){
-  if(musicPlaying)return;
-  try{
-    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==='suspended')audioCtx.resume();
-  }catch(e){return;}
-  musicPlaying=true;
-  const bpm=140,beatLen=60/bpm;
-  const masterGain=audioCtx.createGain();
-  masterGain.gain.value=0.3;
-  masterGain.connect(audioCtx.destination);
+const T = todayStr(), TM = tomorrowStr();
 
-  const bassFreqs=[130.81,146.83,164.81,130.81,130.81,146.83,164.81,196.00];
-  const melodyFreqs=[523.25,0,659.25,783.99,523.25,659.25,0,783.99,523.25,0,659.25,783.99,1046.5,783.99,659.25,523.25];
-
-  function scheduleBar(when){
-    // Bass
-    bassFreqs.forEach((f,i)=>{
-      const t=when+i*beatLen;
-      const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-      o.type='sawtooth';o.frequency.value=f;
-      g.gain.setValueAtTime(.25,t);
-      g.gain.linearRampToValueAtTime(.001,t+beatLen*.8);
-      o.connect(g);g.connect(masterGain);
-      o.start(t);o.stop(t+beatLen);
-    });
-    // Melody
-    melodyFreqs.forEach((f,i)=>{
-      if(!f)return;
-      const t=when+i*(beatLen/2);
-      const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-      o.type='square';o.frequency.value=f;
-      g.gain.setValueAtTime(.08,t);
-      g.gain.linearRampToValueAtTime(.001,t+beatLen/2*.7);
-      o.connect(g);g.connect(masterGain);
-      o.start(t);o.stop(t+beatLen/2);
-    });
-    // Kick drums
-    for(let i=0;i<8;i++){
-      const t=when+i*beatLen;
-      const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-      o.type='sine';
-      o.frequency.setValueAtTime(150,t);
-      o.frequency.linearRampToValueAtTime(40,t+.08);
-      g.gain.setValueAtTime(i%2===0?.4:.2,t);
-      g.gain.linearRampToValueAtTime(.001,t+.1);
-      o.connect(g);g.connect(masterGain);
-      o.start(t);o.stop(t+.12);
-    }
-    // Hi-hat noise
-    for(let i=0;i<16;i++){
-      const t=when+i*(beatLen/2);
-      const len=1200;
-      const buf=audioCtx.createBuffer(1,len,audioCtx.sampleRate);
-      const d=buf.getChannelData(0);
-      for(let j=0;j<len;j++)d[j]=(Math.random()*2-1)*Math.pow(1-j/len,3);
-      const s=audioCtx.createBufferSource(),g=audioCtx.createGain();
-      s.buffer=buf;g.gain.value=i%2===0?.15:.08;
-      s.connect(g);g.connect(masterGain);
-      s.start(t);
-    }
-  }
-
-  const barLen=bassFreqs.length*beatLen;
-  let nextBar=audioCtx.currentTime+.05;
-  // Schedule first 2 bars immediately
-  scheduleBar(nextBar);
-  scheduleBar(nextBar+barLen);
-  nextBar+=barLen*2;
-
-  musicInterval=setInterval(()=>{
-    if(!musicPlaying||!audioCtx)return;
-    // Schedule ahead when we're within 1 bar of running out
-    if(audioCtx.currentTime>nextBar-barLen-0.5){
-      try{scheduleBar(nextBar);nextBar+=barLen;}catch(e){}
-    }
-  },200);
-}
-function stopMusic(){
-  musicPlaying=false;
-  if(musicInterval){clearInterval(musicInterval);musicInterval=null;}
-  if(audioCtx){try{audioCtx.close();}catch(e){}audioCtx=null;}
-}
-function playCatchSFX(){
-  if(!audioCtx||audioCtx.state==='closed')return;
-  try{
-    const t=audioCtx.currentTime;
-    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-    o.type='sine';o.frequency.setValueAtTime(500,t);o.frequency.linearRampToValueAtTime(1500,t+.15);
-    g.gain.setValueAtTime(.25,t);g.gain.linearRampToValueAtTime(.001,t+.2);
-    o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+.25);
-    // Coin bling
-    const o2=audioCtx.createOscillator(),g2=audioCtx.createGain();
-    o2.type='sine';o2.frequency.value=1200;
-    g2.gain.setValueAtTime(.15,t+.05);g2.gain.linearRampToValueAtTime(.001,t+.3);
-    o2.connect(g2);g2.connect(audioCtx.destination);o2.start(t+.05);o2.stop(t+.3);
-  }catch(e){}
-}
-function playfleeSFX(){
-  if(!audioCtx||audioCtx.state==='closed')return;
-  try{
-    const t=audioCtx.currentTime;
-    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-    o.type='sawtooth';o.frequency.setValueAtTime(300,t);o.frequency.linearRampToValueAtTime(80,t+.25);
-    g.gain.setValueAtTime(.12,t);g.gain.linearRampToValueAtTime(.001,t+.3);
-    o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+.35);
-  }catch(e){}
-}
-
-const PEOPLE_TYPES=[
-  {name:'velhinha',w:28,h:44,speed:70,bodyColor:'#dda0dd',points:30,hair:'#ccc',hairStyle:'bun',team:'',
-   speeches:['SAI DAQUI PESTE!','ANÃO SAFADO!','VÁ PRA PQP!','NÃO QUERO!','DESGRAÇADO!']},
-  {name:'criança',w:22,h:32,speed:160,bodyColor:'#87ceeb',points:20,hair:'#8B4513',hairStyle:'short',team:'',
-   speeches:['MAMÃE SOCORRO!','FOGE!','TIO FEIO!','CORRE!','ELE É ANÃO!']},
-  {name:'homem',w:30,h:48,speed:100,bodyColor:'#4682b4',points:10,hair:'#333',hairStyle:'short',team:'',
-   speeches:['VAI TOMAR NO CU!','SAI FDP!','ANÃO CHATO!','ME DEIXA!','VAI SE FUDE!']},
-  {name:'mulher',w:28,h:46,speed:120,bodyColor:'#e88bc4',points:15,hair:'#8B4513',hairStyle:'long',team:'',
-   speeches:['SAI PRA LÁ VIADO!','ANÃO FDP!','NOJENTO!','FORA BAIXINHO!','QUE SACO!']},
-  {name:'empresário',w:32,h:50,speed:85,bodyColor:'#2f4f4f',points:40,hair:'#222',hairStyle:'short',team:'',
-   speeches:['JÁ TENHO CONSÓRCIO!','SAI ANÃO!','TENHO REUNIÃO!','PORRA!','ME LARGA!']},
-  {name:'atleta',w:30,h:48,speed:210,bodyColor:'#ff6347',points:50,hair:'#333',hairStyle:'band',team:'',
-   speeches:['CORRE CARALHO!','NÃO ME PEGA!','KKKKK ANÃO!','FOGE!','LENTO PRA CARALHO!']},
-  {name:'velhinho',w:30,h:44,speed:55,bodyColor:'#8fbc8f',points:35,hair:'#ddd',hairStyle:'bald',team:'',
-   speeches:['NA MINHA ÉPOCA...','SAI BAIXINHO!','VÁ SE DANAR!','ANÃO PESTE!','QUE INFERNO!']},
-  {name:'palmeirense',w:30,h:48,speed:130,bodyColor:'#006400',points:25,hair:'#333',hairStyle:'short',team:'palmeiras',
-   speeches:['VAI SE FUDE ANÃO!','PALMEIRAS NÃO FAZ CONSÓRCIO!','SAI VIADO!','PORCO É FODA!','AVANTI PALESTRA!','ANÃO FDP!']},
-  {name:'são-paulino',w:30,h:48,speed:120,bodyColor:'#f0f0f0',points:25,hair:'#222',hairStyle:'short',team:'spfc',
-   speeches:['TRICOLOR NÃO QUER!','SAI ANÃO FDP!','SOBERANO PORRA!','VAI SE FUDE!','ANÃO VIADO!','MORUMBI É NOSSO!']},
-  {name:'corintiano',w:30,h:48,speed:140,bodyColor:'#111',points:25,hair:'#111',hairStyle:'short',team:'corinthians',
-   speeches:['VAI CORINTHIANS!','ANÃO VIADO!','FIEL NÃO COMPRA!','SAI FDP!','GAVIÕES DA FIEL!','TODO PODEROSO!']},
+let meetings = [
+  {id:1,title:'Reunião de Planejamento Q2',resp:'Ana Paula',participants:'Equipe Comercial',date:T,start:'09:00',end:'10:30',notes:'Pauta: metas e cronograma',status:'scheduled'},
+  {id:2,title:'Apresentação de Resultados',resp:'Carlos Melo',participants:'Diretoria',date:T,start:'14:00',end:'15:30',notes:'',status:'scheduled'},
+  {id:3,title:'Treinamento — Novo CRM',resp:'RH',participants:'Equipe de Vendas',date:TM,start:'10:00',end:'12:00',notes:'Link meet: sese.com/meet/treinamento',status:'scheduled'},
 ];
+let nextId = 10;
+let cancelTarget = null;
+let manualStatus = null; // null = auto, 'free'|'busy'|'reserved' = override
 
-const MSGS_CATCH=['VENDIDO!','ASSINA AQUI!','CONSÓRCIO FECHADO!','PARCELA SUAVE!','NEGÓCIO FEITO!','É LÓGICO QUE DÁ!','SEM JUROS!','CAIU NA LÁBIA!'];
-const MSGS_FLEE=['FUGIU!','ESCAPOU!','NÃOOO!','VOLTAAAA!','DROGA!'];
+/* ══════════════ HELPERS ══════════════ */
+function toMins(t){ const[h,m]=t.split(':').map(Number); return h*60+m }
+function fmtDuration(s,e){
+  const d=toMins(e)-toMins(s);
+  if(d<=0)return'';
+  const h=Math.floor(d/60),m=d%60;
+  return h&&m?`${h}h${m}min`:h?`${h}h`:`${m}min`;
+}
+function fmtDate(str){
+  const d=new Date(str+'T00:00:00');
+  const today=todayStr(),tom=tomorrowStr();
+  if(str===today)return'Hoje';
+  if(str===tom)return'Amanhã';
+  return d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'}).replace('.',' ').replace(/^\w/,c=>c.toUpperCase());
+}
+function fmtLongDate(str){
+  const d=new Date(str+'T00:00:00');
+  return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+}
+function nowMins(){ const n=new Date(); return n.getHours()*60+n.getMinutes() }
 
-function createPlayer(){return{x:W/2,y:H-100,w:48,h:60,speed:175,vx:0,vy:0,dir:1,attacking:false,attackTimer:0,walkFrame:0};}
-
-function spawnPerson(){
-  const type=PEOPLE_TYPES[Math.random()*PEOPLE_TYPES.length|0];
-  let x,y;const side=Math.random()*4|0;
-  if(side===0){x=-30;y=Math.random()*H*.7+50;}else if(side===1){x=W+30;y=Math.random()*H*.7+50;}
-  else if(side===2){x=Math.random()*W;y=-30;}else{x=Math.random()*W;y=H+30;}
-  return{...type,x,y,targetX:60+Math.random()*(W-120),targetY:60+Math.random()*(H-200),fleeing:false,fleeX:0,fleeY:0,caught:false,walkFrame:0,arrived:false,dir:Math.random()>.5?1:-1,speechTimer:0,speech:''};
+function getMeetingState(m){
+  const today=todayStr(),nm=nowMins();
+  if(m.status==='cancelled')return'cancelled';
+  const s=toMins(m.start),e=toMins(m.end);
+  if(m.date<today||(m.date===today&&e<=nm))return'done';
+  if(m.date===today&&nm>=s&&nm<e)return'now';
+  if(m.date===today&&nm>=s-15&&nm<s)return'soon';
+  return'scheduled';
 }
 
-function addParticles(x,y,color,text){
-  for(let i=0;i<6;i++)particles.push({x,y,vx:(Math.random()-.5)*180,vy:-Math.random()*120-40,life:1,color,size:3+Math.random()*3});
-  if(text)particles.push({x,y:y-20,vx:0,vy:-50,life:2,text,size:Math.min(22,W*.04),color:'#fff'});
-}
-
-function drawStore(){
-  const mobile=W<600;
-  const cx=mobile?W*0.7:W/2,sy=H-85;
-  const s=mobile?.65:1;
-  ctx.save();ctx.translate(cx,sy);ctx.scale(s,s);ctx.translate(-cx,-sy);
-  ctx.fillStyle='#b20000';ctx.fillRect(cx-90,sy,180,85);ctx.fillStyle='#cc0000';ctx.fillRect(cx-85,sy+5,170,75);
-  ctx.fillStyle='#990000';ctx.fillRect(cx-100,sy-35,200,35);ctx.fillStyle='#cc0000';ctx.fillRect(cx-96,sy-32,192,29);
-  ctx.fillStyle='#fff';ctx.font='bold '+Math.min(20,W*.04)+'px Bangers,cursive';ctx.textAlign='center';
-  ctx.fillText('ANDRÉMICON',cx,sy-10);
-  ctx.font=Math.min(9,W*.02)+'px Fredoka,sans-serif';ctx.fillStyle='#ffd700';ctx.fillText('É LÓGICO QUE DÁ!',cx,sy+18);
-  ctx.fillStyle='#700000';ctx.fillRect(cx-18,sy+30,36,50);ctx.fillStyle='#ffd700';ctx.beginPath();ctx.arc(cx+12,sy+55,3,0,Math.PI*2);ctx.fill();
-  ctx.restore();
-}
-
-function drawFactory(){
-  const mobile=W<600;
-  const sc=mobile?.85:1;
-  const fx=mobile?W*0.25:W/2-220,fy=H-(mobile?85:100);
-  ctx.save();ctx.translate(fx,fy);ctx.scale(sc,sc);
-  // Main building
-  ctx.fillStyle='#1a3a6e';
-  ctx.fillRect(-60,-50,120,110);
-  ctx.fillStyle='#15305a';
-  ctx.fillRect(-55,-45,110,100);
-  // Chimney
-  ctx.fillStyle='#2a4a7e';ctx.fillRect(-40,-80,15,35);ctx.fillRect(25,-70,12,25);
-  // Smoke
-  ctx.fillStyle='rgba(180,180,180,.4)';
-  const t=Date.now()/1000;
-  ctx.beginPath();ctx.arc(-33+Math.sin(t)*3,-85-Math.abs(Math.sin(t*1.5))*8,6,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(-30+Math.sin(t*.7)*5,-95-Math.abs(Math.sin(t*1.2))*6,8,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(31+Math.sin(t*.8)*3,-75-Math.abs(Math.sin(t*1.3))*7,5,0,Math.PI*2);ctx.fill();
-  // Windows grid - some show piston
-  ctx.fillStyle='#aa8800';
-  for(let r=0;r<2;r++)for(let c=0;c<4;c++){
-    ctx.fillRect(-45+c*28,-35+r*25,10,12);
+/* ══════════════ STATUS LOGIC ══════════════ */
+function computeAutoStatus(){
+  const today=todayStr(),nm=nowMins();
+  const active=meetings.filter(m=>m.status==='scheduled'&&m.date===today);
+  for(const m of active){
+    const s=toMins(m.start),e=toMins(m.end);
+    if(nm>=s&&nm<e)return{status:'busy',meeting:m};
   }
-  // ANIMATED PISTON visible through big center window
-  const pt=Date.now()/300;
-  const pistonY=Math.sin(pt)*10;
-  // Window frame
-  ctx.fillStyle='#0a1830';ctx.fillRect(-18,5,36,30);
-  ctx.fillStyle='#1a2a4a';ctx.fillRect(-15,8,30,24);
-  // Cylinder
-  ctx.fillStyle='#888';ctx.fillRect(-10,10,20,20);
-  ctx.strokeStyle='#666';ctx.lineWidth=1;ctx.strokeRect(-10,10,20,20);
-  // Piston head
-  ctx.fillStyle='#bbb';ctx.fillRect(-8,18+pistonY,16,6);
-  ctx.fillStyle='#ddd';ctx.fillRect(-6,19+pistonY,12,4);
-  // Connecting rod
-  ctx.strokeStyle='#999';ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(0,24+pistonY);ctx.lineTo(0,35);ctx.stroke();
-  // Crankshaft circle
-  ctx.strokeStyle='#aaa';ctx.lineWidth=2;
-  ctx.beginPath();ctx.arc(0,35,4,0,Math.PI*2);ctx.stroke();
-  ctx.fillStyle='#ccc';ctx.beginPath();ctx.arc(Math.cos(pt)*3,35+Math.sin(pt)*3,2,0,Math.PI*2);ctx.fill();
-  // Sparks
-  if(Math.sin(pt*2)>.8){
-    ctx.fillStyle='#ffd700';
-    ctx.beginPath();ctx.arc(-3+Math.random()*6,14+pistonY,1.5,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(-2+Math.random()*4,16+pistonY,1,0,Math.PI*2);ctx.fill();
+  for(const m of active){
+    const s=toMins(m.start);
+    if(nm>=s-15&&nm<s)return{status:'reserved',meeting:m};
   }
-  // Door
-  ctx.fillStyle='#0d2040';ctx.fillRect(-8,40,16,20);
-  ctx.fillStyle='#ffd700';ctx.beginPath();ctx.arc(5,50,2,0,Math.PI*2);ctx.fill();
-  // Sign - KSPG (BIG & BOLD)
-  ctx.fillStyle='#fff';ctx.fillRect(-60,-68,120,30);
-  ctx.strokeStyle='#1a3a6e';ctx.lineWidth=3;ctx.strokeRect(-60,-68,120,30);
-  ctx.fillStyle='#1a3a6e';ctx.font='bold 28px Bangers,cursive';ctx.textAlign='center';
-  ctx.fillText('K S P G',0,-46);
-  // Subtitle
-  ctx.fillStyle='#fff';ctx.font='9px Fredoka,sans-serif';
-  ctx.fillText('PISTÕES & PEÇAS',0,-39);
-  ctx.restore();
+  return{status:'free',meeting:null};
 }
 
-function drawAndre(p){
-  const bounce=Math.sin(p.walkFrame*8)*3,x=p.x,y=p.y+bounce;
-  ctx.save();ctx.translate(x,y);if(p.dir<0)ctx.scale(-1,1);
-  ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(0,30,22,7,0,0,Math.PI*2);ctx.fill();
-  const ls=Math.sin(p.walkFrame*8)*7;
-  ctx.fillStyle='#2a2a2a';ctx.fillRect(-10,12,9,18+ls*.4);ctx.fillRect(2,12,9,18-ls*.4);
-  ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.roundRect(-12,28+ls*.3,12,6,2);ctx.fill();ctx.beginPath();ctx.roundRect(1,28-ls*.3,12,6,2);ctx.fill();
-  ctx.fillStyle='#1a3a3a';ctx.beginPath();ctx.roundRect(-18,-14,36,30,4);ctx.fill();
-  ctx.fillStyle='#c4b396';
-  ctx.beginPath();ctx.moveTo(-20,-18);ctx.lineTo(-8,-14);ctx.lineTo(-10,16);ctx.lineTo(-22,14);ctx.closePath();ctx.fill();
-  ctx.beginPath();ctx.moveTo(20,-18);ctx.lineTo(8,-14);ctx.lineTo(10,16);ctx.lineTo(22,14);ctx.closePath();ctx.fill();
-  ctx.fillRect(-28,-16,12,28);ctx.fillRect(16,-16,12,28);ctx.fillRect(-30,-18,60,6);
-  ctx.fillStyle='#b8a888';ctx.beginPath();ctx.moveTo(-14,-18);ctx.lineTo(-6,-10);ctx.lineTo(6,-10);ctx.lineTo(14,-18);ctx.lineTo(10,-20);ctx.lineTo(0,-14);ctx.lineTo(-10,-20);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#d4a574';ctx.beginPath();ctx.roundRect(-30,10,8,8,3);ctx.fill();ctx.beginPath();ctx.roundRect(22,10,8,8,3);ctx.fill();
-  const bs=Math.sin(p.walkFrame*6)*4;ctx.save();ctx.translate(26,18+bs);ctx.fillStyle='#5c3310';ctx.beginPath();ctx.roundRect(-7,-5,16,12,2);ctx.fill();ctx.fillStyle='#8B6914';ctx.fillRect(-3,-8,8,4);ctx.fillStyle='#ffd700';ctx.beginPath();ctx.arc(1,-5,1.5,0,Math.PI*2);ctx.fill();ctx.restore();
-  ctx.fillStyle='#d4a574';ctx.beginPath();ctx.arc(0,-28,15,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.moveTo(-14,-24);ctx.quadraticCurveTo(-16,-16,-10,-12);ctx.lineTo(10,-12);ctx.quadraticCurveTo(16,-16,14,-24);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#555';ctx.beginPath();ctx.arc(-12,-32,7,Math.PI*.7,Math.PI*1.5);ctx.fill();ctx.beginPath();ctx.arc(12,-32,7,Math.PI*1.5,Math.PI*2.3);ctx.fill();
-  ctx.fillStyle='#666';ctx.beginPath();ctx.ellipse(0,-42,5,2,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(255,230,200,.25)';ctx.beginPath();ctx.ellipse(0,-40,9,5,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#4a4040';ctx.beginPath();ctx.moveTo(-12,-20);ctx.quadraticCurveTo(-15,-10,-10,-4);ctx.quadraticCurveTo(-6,4,0,5);ctx.quadraticCurveTo(6,4,10,-4);ctx.quadraticCurveTo(15,-10,12,-20);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#3a3535';ctx.beginPath();ctx.moveTo(-8,-16);ctx.quadraticCurveTo(-10,-6,-6,0);ctx.quadraticCurveTo(0,6,6,0);ctx.quadraticCurveTo(10,-6,8,-16);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#3a3535';ctx.beginPath();ctx.moveTo(-9,-18);ctx.quadraticCurveTo(-5,-14,0,-16);ctx.quadraticCurveTo(5,-14,9,-18);ctx.quadraticCurveTo(5,-16,0,-17);ctx.quadraticCurveTo(-5,-16,-9,-18);ctx.fill();
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(-6,-28,3.5,3,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(6,-28,3.5,3,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#3a2a1a';ctx.beginPath();ctx.arc(-5,-28,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(7,-28,2,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#4a3a2a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-10,-33);ctx.quadraticCurveTo(-6,-35,-2,-33);ctx.stroke();ctx.beginPath();ctx.moveTo(3,-33);ctx.quadraticCurveTo(7,-35,11,-33);ctx.stroke();
-  ctx.fillStyle='#c49060';ctx.beginPath();ctx.ellipse(0,-22,3,2.5,0,0,Math.PI*2);ctx.fill();
-  if(p.attacking){
-    ctx.fillStyle='#000';ctx.beginPath();ctx.arc(0,-16,7,0,Math.PI);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(-5,-16,10,3);
-    ctx.strokeStyle='#ffd700';ctx.lineWidth=2;for(let i=0;i<5;i++){const a=-Math.PI/2+(i-2)*.5;ctx.beginPath();ctx.moveTo(Math.cos(a)*22,-28+Math.sin(a)*22);ctx.lineTo(Math.cos(a)*28,-28+Math.sin(a)*28);ctx.stroke();}
-    for(let i=0;i<4;i++){const angle=p.attackTimer*12+i*1.6,dist=15+p.attackTimer*60;ctx.save();ctx.translate(Math.cos(angle)*dist,Math.sin(angle)*dist-15);ctx.rotate(angle*2);ctx.fillStyle='#fff';ctx.fillRect(-5,-3,10,7);ctx.fillStyle='#ccc';ctx.fillRect(-3,-1,6,1);ctx.fillRect(-3,1,4,1);ctx.restore();}
-  }else{ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,-14,5,.1,Math.PI-.1);ctx.stroke();}
-  ctx.restore();
+function effectiveStatus(){
+  if(manualStatus)return{status:manualStatus,meeting:null};
+  return computeAutoStatus();
 }
 
-function drawPerson(p){
-  const bounce=Math.sin(p.walkFrame*8)*2;ctx.save();ctx.translate(p.x,p.y+bounce);if(p.dir<0)ctx.scale(-1,1);
-  ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(0,p.h/2,p.w/2,5,0,0,Math.PI*2);ctx.fill();
-  const ls=Math.sin(p.walkFrame*10)*5;
-  ctx.fillStyle=p.team?'#333':'#555';ctx.fillRect(-6,p.h/2-4,6,12+ls*.4);ctx.fillRect(1,p.h/2-4,6,12-ls*.4);
-  ctx.fillStyle='#333';ctx.fillRect(-7,p.h/2+7+ls*.3,8,4);ctx.fillRect(0,p.h/2+7-ls*.3,8,4);
-  ctx.fillStyle=p.bodyColor;ctx.beginPath();ctx.roundRect(-p.w/2+2,-6,p.w-4,p.h/2+6,4);ctx.fill();
-  if(p.team==='palmeiras'){ctx.fillStyle='#fff';ctx.fillRect(-2,-4,4,p.h/2+2);ctx.fillStyle='#ffd700';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText('P',0,10);}
-  else if(p.team==='spfc'){ctx.fillStyle='#cc0000';ctx.fillRect(-p.w/2+3,0,p.w-6,5);ctx.fillStyle='#000';ctx.fillRect(-p.w/2+3,5,p.w-6,4);ctx.fillStyle='#cc0000';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.fillText('SP',0,22);}
-  else if(p.team==='corinthians'){ctx.fillStyle='#fff';ctx.fillRect(-p.w/2+4,2,p.w-8,3);ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.fillText('C',0,18);}
-  ctx.fillStyle=p.bodyColor;ctx.fillRect(-p.w/2-2,-4,6,p.h/3);ctx.fillRect(p.w/2-4,-4,6,p.h/3);
-  const sk=['#e8c89e','#d4a574','#c49060','#f0d0a0','#dbb896'];
-  ctx.fillStyle=sk[p.name.length%sk.length];ctx.beginPath();ctx.arc(0,-14,11,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=p.hair;
-  if(p.hairStyle==='bun'){ctx.beginPath();ctx.arc(0,-20,9,Math.PI,0);ctx.fill();ctx.beginPath();ctx.arc(0,-26,5,0,Math.PI*2);ctx.fill();}
-  else if(p.hairStyle==='long'){ctx.beginPath();ctx.arc(0,-18,10,Math.PI*.8,Math.PI*2.2);ctx.fill();ctx.fillRect(-10,-14,4,14);ctx.fillRect(6,-14,4,14);}
-  else if(p.hairStyle==='band'){ctx.fillStyle='#ff0000';ctx.fillRect(-10,-20,20,4);}
-  else if(p.hairStyle!=='bald'){ctx.beginPath();ctx.arc(0,-18,9,Math.PI,0);ctx.fill();}
-  if(p.fleeing){
-    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-4,-15,3.5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(4,-15,3.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#000';ctx.beginPath();ctx.arc(-4,-15,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(4,-15,2,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(0,-7,4,0,Math.PI*2);ctx.fill();
-    if(p.name!=='criança'){ctx.strokeStyle='#000';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-8,-19);ctx.lineTo(-2,-17);ctx.stroke();ctx.beginPath();ctx.moveTo(8,-19);ctx.lineTo(2,-17);ctx.stroke();}
-    ctx.fillStyle='#87ceeb';ctx.beginPath();ctx.moveTo(12,-18);ctx.quadraticCurveTo(14,-14,12,-12);ctx.quadraticCurveTo(10,-14,12,-18);ctx.fill();
-  }else{
-    ctx.fillStyle='#000';ctx.beginPath();ctx.arc(-4,-15,1.5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(4,-15,1.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(0,-8,2.5,0,Math.PI);ctx.fill();
+function nextScheduledMeeting(){
+  const today=todayStr(),nm=nowMins();
+  const upcoming=meetings
+    .filter(m=>m.status==='scheduled')
+    .filter(m=>m.date>today||(m.date===today&&toMins(m.start)>nm))
+    .sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):toMins(a.start)-toMins(b.start));
+  return upcoming[0]||null;
+}
+
+function setStatus(s){
+  manualStatus=(manualStatus===s)?null:s;
+  if(!manualStatus)toast('Status automático ativado','info');
+  else toast(`Status: ${{free:'Disponível',busy:'Ocupada',reserved:'Reservada'}[s]}`,'info');
+  renderStatus();
+  save();
+}
+
+/* ══════════════ CLOCK ══════════════ */
+function tick(){
+  const now=new Date();
+  const H=String(now.getHours()).padStart(2,'0');
+  const M=String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock-time').textContent=`${H}:${M}`;
+  const dayNames=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const monNames=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  document.getElementById('clock-date').textContent=
+    `${dayNames[now.getDay()]}, ${now.getDate()} ${monNames[now.getMonth()]} ${now.getFullYear()}`;
+}
+setInterval(tick,1000);tick();
+setInterval(()=>{if(!manualStatus)renderStatus();},30000);
+
+/* ══════════════ RENDER STATUS ══════════════ */
+function renderStatus(){
+  const {status,meeting}=effectiveStatus();
+  const card=document.getElementById('status-card');
+  card.className='status-card '+(status==='busy'?'busy':status==='reserved'?'reserved':'');
+
+  const pillMap={
+    free:'pill-ok',
+    busy:'pill-red',
+    reserved:'pill-warn'
+  };
+  const labelMap={free:'Disponível',busy:'Ocupada',reserved:'Reservada'};
+  const pill=document.getElementById('status-pill');
+  pill.className='status-pill '+pillMap[status];
+  document.getElementById('status-label').textContent=labelMap[status];
+
+  document.getElementById('sc-name').textContent=room.name;
+  document.getElementById('sc-floor').textContent=room.floor;
+  document.getElementById('sc-cap').textContent=room.cap+' pessoa'+(room.cap!==1?'s':'');
+  document.getElementById('sc-resp').textContent=room.resp||'—';
+  document.getElementById('hd-name').textContent=room.name;
+
+  // quick buttons active
+  ['qb-ok','qb-busy','qb-res'].forEach(id=>document.getElementById(id).classList.remove('act'));
+  if(manualStatus){
+    const map={free:'qb-ok',busy:'qb-busy',reserved:'qb-res'};
+    document.getElementById(map[manualStatus])?.classList.add('act');
   }
-  if(p.speechTimer>0){
-    const fs=Math.min(12,W*.022);ctx.font='bold '+fs+'px Fredoka,sans-serif';ctx.textAlign='center';
-    const tw=ctx.measureText(p.speech).width+12;
-    ctx.fillStyle='rgba(0,0,0,.75)';ctx.beginPath();ctx.roundRect(-tw/2,-36,tw,18,8);ctx.fill();
-    ctx.fillStyle='#ff4444';ctx.fillText(p.speech,0,-23);
+
+  // current meeting
+  const nowEl=document.getElementById('status-meeting-now');
+  const autoResult=computeAutoStatus();
+  if(autoResult.status==='busy'&&autoResult.meeting){
+    const m=autoResult.meeting;
+    nowEl.innerHTML=`<div class="meeting-info-card mic-now">
+      <div class="mic-label">🔴 Em andamento</div>
+      <div class="mic-title">${m.title}</div>
+      <div class="mic-sub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ${m.start} – ${m.end} (${fmtDuration(m.start,m.end)})
+        ${m.resp?`&nbsp;·&nbsp; ${m.resp}`:''}
+      </div>
+    </div>`;
+  } else if(autoResult.status==='reserved'&&autoResult.meeting){
+    const m=autoResult.meeting;
+    const mins=toMins(m.start)-nowMins();
+    nowEl.innerHTML=`<div class="meeting-info-card mic-next">
+      <div class="mic-label">🟡 Começa em ${mins} min</div>
+      <div class="mic-title">${m.title}</div>
+      <div class="mic-sub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ${m.start} – ${m.end} · ${m.resp||''}
+      </div>
+    </div>`;
+  } else {
+    nowEl.innerHTML='';
   }
-  ctx.restore();
-}
 
-function drawGround(){
-  ctx.fillStyle='#444';ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
-  for(let x=0;x<W;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=0;y<H;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-  ctx.fillStyle='#555';ctx.fillRect(0,H-95,W,95);ctx.fillStyle='#4a4a4a';ctx.fillRect(0,H-95,W,3);
-}
-
-function startGame(){
-  document.getElementById('startScreen').style.display='none';document.getElementById('gameOver').style.display='none';
-  if(isMobile)document.getElementById('mobileControls').style.display='block';
-  startMusic();
-  player=createPlayer();people=[];particles=[];score=0;timer=60;gameRunning=true;spawnTimer=0;lastTime=performance.now();requestAnimationFrame(loop);
-}
-function endGame(){
-  gameRunning=false;stopMusic();document.getElementById('mobileControls').style.display='none';document.getElementById('gameOver').style.display='flex';
-  document.getElementById('finalScore').textContent=score+' VENDAS';
-  const msgs=[[0,'André foi demitido... 😢'],[5,'Dia fraco na ANDRÉMICON 😐'],[15,'Vendedor mediano 🤷'],[30,'André tá ON FIRE! 🔥'],[50,'MESTRE DO CONSÓRCIO! 👑'],[80,'LENDA DA ANDRÉMICON! 🏆']];
-  let msg=msgs[0][1];for(const[t,m]of msgs)if(score>=t)msg=m;document.getElementById('finalMsg').textContent=msg;
-}
-
-function loop(now){
-  if(!gameRunning)return;const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;
-  timer-=dt;if(timer<=0){endGame();return;}
-  spawnTimer-=dt;if(spawnTimer<=0){people.push(spawnPerson());spawnTimer=.7+Math.random()*1.1;if(timer<30)spawnTimer*=.6;}
-  let dx=0,dy=0;
-  if(keys['ArrowLeft']||keys['KeyA'])dx=-1;if(keys['ArrowRight']||keys['KeyD'])dx=1;
-  if(keys['ArrowUp']||keys['KeyW'])dy=-1;if(keys['ArrowDown']||keys['KeyS'])dy=1;
-  if(joyActive){dx=joyDX;dy=joyDY;}
-  if(mobileAttack&&!player.attacking){player.attacking=true;player.attackTimer=0;mobileAttack=false;}
-  if(dx||dy){const len=Math.sqrt(dx*dx+dy*dy);player.vx=(dx/len)*player.speed;player.vy=(dy/len)*player.speed;if(Math.abs(dx)>.3)player.dir=dx>0?1:-1;player.walkFrame+=dt*player.speed/30;}else{player.vx*=.8;player.vy*=.8;}
-  player.x+=player.vx*dt;player.y+=player.vy*dt;player.x=Math.max(30,Math.min(W-30,player.x));player.y=Math.max(50,Math.min(H-30,player.y));
-  if((keys['Space']||keys['KeyE'])&&!player.attacking){player.attacking=true;player.attackTimer=0;}
-  if(player.attacking){player.attackTimer+=dt;if(player.attackTimer>.4)player.attacking=false;}
-  for(let i=people.length-1;i>=0;i--){
-    const p=people[i];if(p.caught){people.splice(i,1);continue;}
-    const pdx=player.x-p.x,pdy=player.y-p.y,pDist=Math.sqrt(pdx*pdx+pdy*pdy);
-    if(pDist<140&&!p.fleeing){p.fleeing=true;p.speech=p.speeches[Math.random()*p.speeches.length|0];p.speechTimer=2;const a=Math.atan2(-pdy,-pdx)+(Math.random()-.5)*.6;p.fleeX=Math.cos(a);p.fleeY=Math.sin(a);}
-    if(p.fleeing){if(pDist<200){p.fleeX=-pdx/pDist;p.fleeY=-pdy/pDist;}p.x+=p.fleeX*p.speed*1.6*dt;p.y+=p.fleeY*p.speed*1.6*dt;p.dir=p.fleeX>0?1:-1;p.speechTimer-=dt;if(p.speechTimer<=0&&pDist<180){p.speech=p.speeches[Math.random()*p.speeches.length|0];p.speechTimer=1.5;}}
-    else if(!p.arrived){const tdx=p.targetX-p.x,tdy=p.targetY-p.y,tDist=Math.sqrt(tdx*tdx+tdy*tdy);if(tDist>5){p.x+=(tdx/tDist)*p.speed*dt;p.y+=(tdy/tDist)*p.speed*dt;p.dir=tdx>0?1:-1;}else p.arrived=true;}
-    else{if(Math.random()<.008){p.targetX=Math.max(50,Math.min(W-50,p.x+(Math.random()-.5)*200));p.targetY=Math.max(80,Math.min(H-140,p.y+(Math.random()-.5)*150));p.arrived=false;}}
-    p.walkFrame+=dt*(p.fleeing?2:1);
-    if(player.attacking&&pDist<55){p.caught=true;score+=p.points;addParticles(p.x,p.y,'#ffd700',MSGS_CATCH[Math.random()*MSGS_CATCH.length|0]);playCatchSFX();}
-    if(p.x<-80||p.x>W+80||p.y<-80||p.y>H+80){if(p.fleeing){addParticles(Math.max(20,Math.min(W-20,p.x)),Math.max(20,Math.min(H-20,p.y)),'#ff4444',MSGS_FLEE[Math.random()*MSGS_FLEE.length|0]);playfleeSFX();}people.splice(i,1);}
+  // next meeting
+  const nextEl=document.getElementById('status-meeting-next');
+  const next=nextScheduledMeeting();
+  if(next&&autoResult.status!=='busy'&&autoResult.meeting?.id!==next.id&&autoResult.meeting?.id!==next.id){
+    const when=fmtDate(next.date);
+    nextEl.innerHTML=`<div class="meeting-info-card mic-next">
+      <div class="mic-label">📅 Próxima reunião — ${when}</div>
+      <div class="mic-title">${next.title}</div>
+      <div class="mic-sub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ${next.start} – ${next.end} (${fmtDuration(next.start,next.end)})
+        ${next.resp?`&nbsp;·&nbsp; ${next.resp}`:''}
+      </div>
+    </div>`;
+  } else if(!next){
+    nextEl.innerHTML=`<div class="meeting-info-card mic-empty">
+      <div class="mic-label">Próximas reuniões</div>
+      <div class="mic-title" style="font-size:14px;font-weight:500;color:var(--g400)">Nenhuma reunião agendada</div>
+    </div>`;
+  } else {
+    nextEl.innerHTML='';
   }
-  for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;if(!p.text)p.vy+=250*dt;p.life-=dt;if(p.life<=0)particles.splice(i,1);}
-  ctx.clearRect(0,0,W,H);drawGround();drawFactory();drawStore();
-  const drawables=[...people.map(p=>({...p,isPlayer:false})),{isPlayer:true,y:player.y}];drawables.sort((a,b)=>a.y-b.y);
-  for(const d of drawables){if(d.isPlayer)drawAndre(player);else drawPerson(d);}
-  for(const p of particles){ctx.globalAlpha=Math.min(1,p.life);if(p.text){ctx.font='bold '+p.size+'px Bangers,cursive';ctx.textAlign='center';ctx.fillStyle='#000';ctx.fillText(p.text,p.x+2,p.y+2);ctx.fillStyle=p.color;ctx.fillText(p.text,p.x,p.y);}else{ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;}
-  document.getElementById('score').textContent='VENDAS: '+score;document.getElementById('timer').textContent='⏱ '+Math.ceil(timer)+'s';
-  requestAnimationFrame(loop);
 }
+
+/* ══════════════ RENDER AGENDA ══════════════ */
+function renderAgenda(){
+  const list=document.getElementById('agenda-list');
+  const sorted=[...meetings].sort((a,b)=>
+    a.date!==b.date?a.date.localeCompare(b.date):toMins(a.start)-toMins(b.start));
+
+  // group by date
+  const groups={};
+  sorted.forEach(m=>{
+    if(!groups[m.date])groups[m.date]=[];
+    groups[m.date].push(m);
+  });
+
+  const today=todayStr();
+  const dateKeys=Object.keys(groups).sort();
+
+  if(!dateKeys.length){
+    list.innerHTML=`<div class="empty-agenda">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <p>Nenhuma reunião agendada.<br/>Toque em <strong>Agendar</strong> para criar.</p>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML=dateKeys.map(date=>{
+    const ms=groups[date];
+    const items=ms.map(m=>{
+      const state=getMeetingState(m);
+      const stateMap={
+        now:'<span class="mc-status-badge badge-now">Em andamento</span>',
+        soon:'<span class="mc-status-badge badge-sched" style="background:#fef4e2;color:#e88c1a">Em breve</span>',
+        scheduled:'<span class="mc-status-badge badge-sched">Agendada</span>',
+        done:'<span class="mc-status-badge badge-done">Concluída</span>',
+        cancelled:'<span class="mc-status-badge badge-cancel">Cancelada</span>'
+      };
+      const dur=fmtDuration(m.start,m.end);
+      const canCancel=m.status==='scheduled'&&(state==='scheduled'||state==='now'||state==='soon');
+      return `<div class="meeting-card ${m.status==='cancelled'?'cancelled':''}">
+        <div class="mc-stripe"></div>
+        <div style="flex:1">
+          <div class="mc-body">
+            <div class="mc-time">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              ${m.start} – ${m.end}${dur?` · ${dur}`:''}
+            </div>
+            <div class="mc-title">${m.title}</div>
+            ${m.resp?`<div class="mc-organizer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${m.resp}${m.participants?` · ${m.participants}`:''}</div>`:''}
+            ${m.notes?`<div class="mc-notes">${m.notes}</div>`:''}
+            ${stateMap[state]||''}
+          </div>
+          ${canCancel?`<div class="mc-actions">
+            <button class="btn-cancel-meeting" onclick="openCancelConfirm(${m.id})">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Cancelar reunião
+            </button>
+          </div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="date-group">
+      <div class="dg-label">${fmtDate(date)} — ${fmtLongDate(date)}</div>
+      ${items}
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════ QR CODE ══════════════ */
+function updateQR(){
+  const base=room.appUrl||window.location.href.split('?')[0];
+  const data=encodeURIComponent(`${base}?sala=${encodeURIComponent(room.name)}`);
+  const src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data}&bgcolor=ffffff&color=1a1e38&margin=1&qzone=1`;
+  document.getElementById('qr-img').src=src;
+  document.getElementById('qr-room-name').textContent=room.name;
+  document.getElementById('qr-room-floor').textContent=room.floor;
+  document.getElementById('print-name').textContent=room.name;
+  document.getElementById('print-floor').textContent=room.floor;
+  const printSrc=`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${data}&bgcolor=ffffff&color=1a1e38&margin=1&qzone=1`;
+  document.getElementById('print-qr').src=printSrc;
+}
+
+function printQR(){
+  document.getElementById('print-area').style.display='flex';
+  window.print();
+  setTimeout(()=>document.getElementById('print-area').style.display='none',500);
+}
+
+function copyLink(){
+  const base=room.appUrl||window.location.href.split('?')[0];
+  const url=`${base}?sala=${encodeURIComponent(room.name)}`;
+  navigator.clipboard?.writeText(url).then(()=>toast('Link copiado!','ok')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+    toast('Link copiado!','ok');
+  });
+}
+
+/* ══════════════ TABS ══════════════ */
+function switchTab(tab){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  if(tab==='edit')fillEditForm();
+  if(tab==='qr')updateQR();
+}
+
+/* ══════════════ MEETING CRUD ══════════════ */
+function openAddMeeting(){
+  document.getElementById('m-title').value='';
+  document.getElementById('m-date').value=todayStr();
+  document.getElementById('m-date').min=todayStr();
+  document.getElementById('m-start').value='';
+  document.getElementById('m-end').value='';
+  document.getElementById('m-resp').value='';
+  document.getElementById('m-part').value='';
+  document.getElementById('m-notes').value='';
+  document.getElementById('modal-meeting').classList.add('open');
+}
+
+function saveMeeting(){
+  const title=document.getElementById('m-title').value.trim();
+  const date=document.getElementById('m-date').value;
+  const start=document.getElementById('m-start').value;
+  const end=document.getElementById('m-end').value;
+  const resp=document.getElementById('m-resp').value.trim();
+  const part=document.getElementById('m-part').value.trim();
+  const notes=document.getElementById('m-notes').value.trim();
+
+  if(!title){toast('Informe o título da reunião','err');return}
+  if(!date){toast('Informe a data','err');return}
+  if(!start){toast('Informe o horário de início','err');return}
+  if(!end){toast('Informe o horário de término','err');return}
+  if(toMins(end)<=toMins(start)){toast('O término deve ser após o início','err');return}
+
+  // conflict check
+  const conflict=meetings.find(m=>
+    m.status==='scheduled'&&m.date===date&&
+    toMins(start)<toMins(m.end)&&toMins(end)>toMins(m.start)
+  );
+  if(conflict){
+    toast(`Conflito com "${conflict.title}" (${conflict.start}–${conflict.end})`,'err');
+    return;
+  }
+
+  meetings.push({id:nextId++,title,date,start,end,resp,participants:part,notes,status:'scheduled'});
+  closeModal('modal-meeting');
+  renderAgenda();
+  renderStatus();
+  save();
+  toast(`Reunião agendada: ${title}`,'ok');
+}
+
+function openCancelConfirm(id){
+  cancelTarget=id;
+  const m=meetings.find(x=>x.id===id);
+  document.getElementById('cbox-msg').textContent=
+    `Cancelar "${m.title}" (${m.start} – ${m.end})?`;
+  document.getElementById('modal-confirm').classList.add('open');
+}
+
+function doCancel(){
+  const m=meetings.find(x=>x.id===cancelTarget);
+  if(m){m.status='cancelled';save();}
+  closeModal('modal-confirm');
+  renderAgenda();
+  renderStatus();
+  toast('Reunião cancelada','info');
+  cancelTarget=null;
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+}
+
+/* ══════════════ ROOM EDIT ══════════════ */
+function fillEditForm(){
+  document.getElementById('e-name').value=room.name;
+  document.getElementById('e-cap').value=room.cap;
+  document.getElementById('e-floor').value=room.floor;
+  document.getElementById('e-resp').value=room.resp;
+  document.getElementById('e-desc').value=room.desc;
+  document.getElementById('e-url').value=room.appUrl||'';
+  const rc=document.getElementById('edit-res-checks');
+  rc.innerHTML=RESOURCES.map(r=>{
+    const on=room.resources.includes(r);
+    return`<label class="rc ${on?'on':''}">
+      <input type="checkbox" value="${r}" ${on?'checked':''} onchange="this.closest('label').classList.toggle('on',this.checked)">${r}
+    </label>`;
+  }).join('');
+}
+
+function saveRoom(){
+  const name=document.getElementById('e-name').value.trim();
+  const cap=parseInt(document.getElementById('e-cap').value);
+  if(!name){toast('Informe o nome da sala','err');return}
+  if(!cap||cap<1){toast('Informe a capacidade','err');return}
+  room.name=name;
+  room.cap=cap;
+  room.floor=document.getElementById('e-floor').value;
+  room.resp=document.getElementById('e-resp').value.trim();
+  room.desc=document.getElementById('e-desc').value.trim();
+  room.appUrl=document.getElementById('e-url').value.trim()||window.location.href.split('?')[0];
+  room.resources=[...document.querySelectorAll('#edit-res-checks input:checked')].map(i=>i.value);
+  save();
+  renderStatus();
+  updateQR();
+  toast('Sala atualizada com sucesso!','ok');
+}
+
+/* ══════════════ STORAGE ══════════════ */
+function save(){
+  try{
+    localStorage.setItem('sese_room',JSON.stringify(room));
+    localStorage.setItem('sese_meetings',JSON.stringify(meetings));
+    localStorage.setItem('sese_nextId',nextId);
+    localStorage.setItem('sese_manualStatus',manualStatus||'');
+  }catch(e){}
+}
+function load(){
+  try{
+    const r=localStorage.getItem('sese_room');
+    const m=localStorage.getItem('sese_meetings');
+    const n=localStorage.getItem('sese_nextId');
+    const ms=localStorage.getItem('sese_manualStatus');
+    if(r)room=JSON.parse(r);
+    if(m)meetings=JSON.parse(m);
+    if(n)nextId=parseInt(n);
+    manualStatus=ms||null;
+  }catch(e){}
+}
+
+/* ══════════════ TOAST ══════════════ */
+function toast(msg,type='info'){
+  const icons={
+    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+    err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+  };
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`${icons[type]||icons.info}<span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+
+/* ══════════════ INIT ══════════════ */
+load();
+renderStatus();
+renderAgenda();
+updateQR();
 </script>
 </body>
 </html>
