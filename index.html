@@ -17,7 +17,7 @@
   --g1:#f4f6fb;--g2:#e0e3f0;--g3:#c8cce0;--g4:#9099be;--g6:#5a6180;--g7:#3d4466;--g9:#1a1e38;
   --ok:#22b07a;--okl:#e6f7f0;
   --red:#e04040;--redl:#fde9e9;
-  --warn:#e88c1a;--warnl:#fef4e2;
+  --warn:#e88c1a;--warnl:#fef4e2;--work:#e56f21;--workl:#fff1e7;
   --r:14px;--rs:10px;--rl:20px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -33,6 +33,29 @@ header{background:var(--navy);padding:14px 20px 10px;display:flex;align-items:ce
 .dot.err{background:var(--red)}
 @keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
 .tabs{flex:1;overflow:hidden;background:var(--bg);border-radius:24px 24px 0 0;margin-top:2px;display:flex;flex-direction:column}
+.roombar{background:var(--w);padding:12px 14px 14px;border-bottom:1px solid var(--g2);flex-shrink:0}
+.roombar-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--g4);margin:0 0 8px 2px}
+.room-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.room-option{min-width:0;border:1.5px solid var(--g2);border-radius:13px;background:var(--g1);padding:10px 11px;display:flex;align-items:center;gap:9px;text-align:left;font-family:'DM Sans',sans-serif;color:var(--g7);cursor:pointer;transition:all .2s}
+.room-option:hover{transform:translateY(-1px);border-color:var(--g3)}
+.room-option svg{width:23px;height:23px;flex-shrink:0}
+.room-option span{display:flex;flex-direction:column;min-width:0;line-height:1.1}
+.room-option small{font-size:8px;font-weight:800;letter-spacing:.7px;opacity:.65;margin-bottom:3px}
+.room-option strong{font-size:11px;font-weight:800;white-space:normal}
+.room-option.meeting.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(80,104,240,.26)}
+.room-option.work.active{background:var(--work);border-color:var(--work);color:#fff;box-shadow:0 4px 14px rgba(229,111,33,.28)}
+.active-env{display:flex;align-items:center;gap:10px;border-radius:11px;background:var(--lt);color:var(--blue);padding:9px 11px;margin-bottom:15px;border:1px solid #d5dbfb}
+.active-env-icon{width:30px;height:30px;border-radius:9px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.active-env-icon svg{width:17px;height:17px}
+.active-env span{display:block;font-size:8px;font-weight:800;letter-spacing:.8px;opacity:.7;margin-bottom:2px}
+.active-env strong{display:block;font-size:12px;font-weight:800;line-height:1.15}
+body.work-station-mode .active-env{background:var(--workl);color:#b34e0d;border-color:#f5c8aa}
+body.work-station-mode .active-env-icon{background:var(--work)}
+body.work-station-mode .sc-name,body.work-station-mode .agt{color:#b34e0d}
+body.work-station-mode .btn-add,body.work-station-mode .bsv{background:var(--work);box-shadow:0 4px 14px rgba(229,111,33,.28)}
+body.work-station-mode .mbar{background:var(--work)}
+body.work-station-mode .mtim,body.work-station-mode .nb.on svg,body.work-station-mode .nb.on span{color:var(--work)}
+body.work-station-mode .qrbx{border-color:#f1b991;box-shadow:0 8px 40px rgba(229,111,33,.14)}
 .tab{display:none;flex:1;overflow-y:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch}
 .tab.on{display:flex;flex-direction:column}
 .bnav{background:var(--navy);padding:10px 6px max(env(safe-area-inset-bottom),10px);display:flex;gap:2px;flex-shrink:0}
@@ -187,6 +210,7 @@ textarea.fc{resize:vertical;min-height:72px}
 .toast.ok{border-left:3px solid var(--ok)} .toast.info{border-left:3px solid var(--blue)} .toast.err{border-left:3px solid var(--red)}
 @keyframes tin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
 @keyframes tout{from{opacity:1}to{opacity:0;transform:translateX(24px)}}
+@media(max-width:420px){.roombar{padding:10px 10px 12px}.room-options{gap:6px}.room-option{padding:9px 8px;gap:7px}.room-option svg{width:20px;height:20px}.room-option strong{font-size:10px}}
 @media print{body *{visibility:hidden}#parea,#parea *{visibility:visible}#parea{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;gap:16px;padding:40px}}
 </style>
 </head>
@@ -206,17 +230,35 @@ textarea.fc{resize:vertical;min-height:72px}
 </header>
 
 <div class="tabs">
+  <div class="roombar">
+    <div class="roombar-title">Escolha o ambiente</div>
+    <div class="room-options" role="tablist" aria-label="Ambientes disponíveis">
+      <button type="button" class="room-option meeting" id="roomBtnMeeting" onclick="switchRoom('sala-1')" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="10" width="18" height="8" rx="2"/><path d="M7 10V7m10 3V7M5 21v-3m14 3v-3"/><circle cx="7" cy="5" r="2"/><circle cx="17" cy="5" r="2"/></svg>
+        <span><small>REUNIÕES</small><strong>SALA DE REUNIÃO</strong></span>
+      </button>
+      <button type="button" class="room-option work" id="roomBtnWork" onclick="switchRoom('work-station')" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8m-4-4v4"/><circle cx="12" cy="10" r="2"/></svg>
+        <span><small>SALA DE INTEGRAÇÃO</small><strong>WORK STATION</strong></span>
+      </button>
+    </div>
+  </div>
+
   <!-- STATUS -->
   <div class="tab on" id="tab-status">
     <div class="cbar">
       <div>
         <div class="cd" id="clk-d">—</div>
         <div class="ct" id="clk-t">--:--</div>
-        <div class="csync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.73-7.22"/></svg><span id="synctxt">Aguardando Firebase…</span></div>
+        <div class="csync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.73-7.22"/></svg><span id="synctxt">Conectando automaticamente…</span></div>
       </div>
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     </div>
     <div class="sc" id="scard">
+      <div class="active-env" id="activeEnv">
+        <div class="active-env-icon" id="activeEnvIcon"></div>
+        <div><span>AMBIENTE ATIVO</span><strong id="activeEnvName">SALA DE REUNIÃO</strong></div>
+      </div>
       <div class="sc-top">
         <div>
           <div class="sc-name" id="scn">—</div>
@@ -254,7 +296,7 @@ textarea.fc{resize:vertical;min-height:72px}
         <svg viewBox="0 0 160 36" width="120" height="27" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="sp2" patternUnits="userSpaceOnUse" width="160" height="9"><rect width="160" height="6" fill="#5068F0"/></pattern><clipPath id="sc2"><text x="3" y="33" font-family="'Barlow Condensed',sans-serif" font-style="italic" font-weight="800" font-size="40" letter-spacing="1">SESÉ</text></clipPath></defs><rect width="160" height="36" fill="url(#sp2)" clip-path="url(#sc2)"/></svg>
         <div style="margin-top:20px"><img id="qrimg" src="" alt="QR Code" style="width:200px;height:200px;border-radius:10px;background:var(--g1)"/></div>
         <div class="qrn" id="qrn">—</div>
-        <div class="qrf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="qrf">—</span></div>
+        <div class="qrf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="qrfloor">—</span></div>
         <div class="qrd"></div>
         <div class="qrh">📱 Escaneie para acessar a agenda<br/>e o status desta sala em tempo real</div>
       </div>
@@ -270,13 +312,12 @@ textarea.fc{resize:vertical;min-height:72px}
     <div class="ef">
       <div class="sec">Informações da Sala</div>
       <div class="fr"><div class="fg"><label class="fl">Nome *</label><input class="fc" id="en" type="text" placeholder="Sala Conecta"/></div><div class="fg" style="max-width:100px"><label class="fl">Capacidade *</label><input class="fc" id="ecap" type="number" min="1" placeholder="12"/></div></div>
-      <div class="fr"><div class="fg"><label class="fl">Andar</label><select class="fc" id="efl"><option>Térreo</option><option>1º Andar</option><option>2º Andar</option><option>3º Andar</option></select></div><div class="fg"><label class="fl">Responsável</label><input class="fc" id="eresp" type="text" placeholder="Nome"/></div></div>
+      <div class="fr"><div class="fg"><label class="fl">Andar / Local</label><select class="fc" id="efl"><option>Térreo</option><option>1º Andar</option><option>2º Andar</option><option>3º Andar</option><option>Sala de Integração</option></select></div><div class="fg"><label class="fl">Responsável</label><input class="fc" id="eresp" type="text" placeholder="Nome"/></div></div>
       <div class="fg"><label class="fl">Recursos</label><div class="rcs" id="eres"></div></div>
       <div class="fg"><label class="fl">Observações</label><textarea class="fc" id="edesc" placeholder="Informações adicionais…"></textarea></div>
       <div class="sec" style="margin-top:20px">Link do App (QR Code)</div>
       <div class="fg"><label class="fl">URL base</label><input class="fc" id="eurl" type="url" placeholder="https://usuario.github.io/sala"/><div style="font-size:11px;color:var(--g4);margin-top:4px">URL codificada no QR Code da sala</div></div>
       <button class="bsv" onclick="saveRoom()">Salvar alterações</button>
-      <button class="brc" onclick="openSetup()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Reconfigurar Firebase</button>
     </div>
   </div>
 </div>
@@ -287,27 +328,6 @@ textarea.fc{resize:vertical;min-height:72px}
   <button class="nb" id="nb-qr" onclick="goTab('qr')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="5" y="5" width="3" height="3"/><rect x="16" y="5" width="3" height="3"/><rect x="5" y="16" width="3" height="3"/><path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"/></svg><span>QR Code</span></button>
   <button class="nb" id="nb-edit" onclick="goTab('edit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Editar</span></button>
 </nav>
-
-<!-- SETUP FIREBASE -->
-<div class="ovc" id="ov-setup">
-  <div class="cbox setup">
-    <div class="ci ci-f" style="margin:0 auto 16px">
-      <svg viewBox="0 0 40 40" fill="none" width="40" height="40"><path d="M20 36C20 36 8 28 8 18C8 12.5 13.5 8 20 8C26.5 8 32 12.5 32 18C32 28 20 36 20 36Z" fill="#FFA000"/><path d="M20 30C20 30 12 25 12 18C12 14.7 15.2 12 20 12C24.8 12 28 14.7 28 18C28 25 20 30 20 30Z" fill="#FF6D00"/><circle cx="20" cy="19" r="4" fill="#FFCA28"/></svg>
-    </div>
-    <div class="cttl">Conectar ao Firebase</div>
-    <div class="cmsg">Configure uma vez — todos os celulares e computadores ficam sincronizados em tempo real.</div>
-    <div class="fg"><label class="fl">API Key *</label><input class="fc" id="skey" type="text" placeholder="AIzaSy…"/></div>
-    <div class="fg"><label class="fl">Database URL *</label><input class="fc" id="surl" type="url" value="https://sala-conecta-default-rtdb.firebaseio.com"/><div class="hint">Já preenchido com seu projeto <strong>sala-conecta</strong> ✓</div></div>
-    <div class="fg"><label class="fl">Project ID *</label><input class="fc" id="spid" type="text" value="sala-conecta"/></div>
-    <div class="fg"><label class="fl">ID da Sala</label><input class="fc" id="srid" type="text" value="sala-1" placeholder="sala-1"/><div class="hint">Permite múltiplas salas no mesmo banco</div></div>
-    <button class="bconn" onclick="connectFB()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Conectar e Sincronizar</button>
-    <div class="rtip">
-      ⚠️ No console Firebase → aba <strong>Regras</strong>, cole:<br/>
-      <code>{ "rules": { ".read": true, ".write": true } }</code><br/>
-      <a href="https://console.firebase.google.com/project/sala-conecta/database/sala-conecta-default-rtdb/rules" target="_blank" style="color:var(--blue);font-weight:600">Abrir regras →</a>
-    </div>
-  </div>
-</div>
 
 <!-- AGENDAR -->
 <div class="ov" id="ov-meet" onclick="if(event.target===this)closeOv('ov-meet')">
@@ -348,40 +368,49 @@ textarea.fc{resize:vertical;min-height:72px}
 
 <script>
 const RES=['Projetor','TV/Monitor','Videoconferência','Quadro Branco','Wi-Fi','Ar-condicionado','Café/Água','Acessibilidade'];
-let room={name:'Sala Conecta',cap:12,floor:'1º Andar',resp:'Responsável',resources:['Projetor','Wi-Fi'],desc:'',appUrl:location.href.split('?')[0],manualStatus:null};
-let meetings=[],cancelTarget=null,db=null,rpath='sala-1';
+const FIREBASE_CONFIG={
+  databaseURL:'https://sala-conecta-default-rtdb.firebaseio.com',
+  projectId:'sala-conecta'
+};
+const DEFAULT_ROOM_ID='sala-1';
+const ROOMS={
+  'sala-1':{label:'SALA DE REUNIÃO',name:'Sala Conecta',cap:12,floor:'1º Andar',resp:'Responsável',resources:['Projetor','Wi-Fi']},
+  'work-station':{label:'WORK STATION (SALA DE INTEGRAÇÃO)',name:'WORK STATION',cap:null,floor:'Sala de Integração',resp:'',resources:[]}
+};
+function getInitialRoomId(){const id=new URLSearchParams(location.search).get('sala');return ROOMS[id]?id:DEFAULT_ROOM_ID;}
+function newRoom(id){const r=ROOMS[id]||ROOMS[DEFAULT_ROOM_ID];return{name:r.name,cap:r.cap,floor:r.floor,resp:r.resp,resources:[...r.resources],desc:'',appUrl:location.href.split('?')[0],manualStatus:null};}
+let rpath=getInitialRoomId(),room=newRoom(rpath);
+let meetings=[],cancelTarget=null,db=null,roomRef=null,meetingsRef=null,firebaseDenied=false,firebaseErrorShown=false;
 
 /* ── FIREBASE ── */
 function connectFB(){
-  const key=document.getElementById('skey').value.trim();
-  const url=document.getElementById('surl').value.trim();
-  const pid=document.getElementById('spid').value.trim();
-  const rid=(document.getElementById('srid').value.trim()||'sala-1').replace(/[^a-z0-9-]/g,'');
-  if(!key||!url||!pid){toast('Preencha todos os campos obrigatórios','err');return;}
   try{
-    try{firebase.app();}catch{firebase.initializeApp({apiKey:key,databaseURL:url,projectId:pid});}
-    db=firebase.database(); rpath=rid;
-    localStorage.setItem('sese_fb',JSON.stringify({key,url,pid,rid}));
-    closeOv('ov-setup');
-    toast('Firebase conectado! Sincronizando…','ok');
+    try{firebase.app();}catch{firebase.initializeApp(FIREBASE_CONFIG);}
+    db=firebase.database();
     startListeners(); monitorConn();
-  }catch(e){toast('Erro: '+e.message,'err');}
+  }catch(e){handleFirebaseError(e);}
 }
 function startListeners(){
-  db.ref(rpath+'/room').on('value',snap=>{
+  if(!db)return;
+  if(roomRef)roomRef.off();
+  if(meetingsRef)meetingsRef.off();
+  roomRef=db.ref(rpath+'/room');
+  meetingsRef=db.ref(rpath+'/meetings');
+  roomRef.on('value',snap=>{
     const d=snap.val();
-    if(d){room={...room,...d};renderStatus();}
-    else db.ref(rpath+'/room').set(room);
-  });
-  db.ref(rpath+'/meetings').on('value',snap=>{
+    if(d){room={...room,...d};saveLocal();renderStatus();}
+    else db.ref(rpath+'/room').set(room).catch(handleFirebaseError);
+  },handleFirebaseError);
+  meetingsRef.on('value',snap=>{
     meetings=[];
     snap.forEach(c=>meetings.push({...c.val(),_k:c.key}));
     meetings.sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):toM(a.start)-toM(b.start));
-    renderAgenda(); renderStatus();
-  });
+    saveLocal();renderAgenda();renderStatus();
+  },handleFirebaseError);
 }
 function monitorConn(){
   db.ref('.info/connected').on('value',snap=>{
+    if(firebaseDenied)return;
     const ok=snap.val()===true;
     const d=document.getElementById('cdot');
     d.className='dot '+(ok?'ok':'wait');
@@ -389,8 +418,57 @@ function monitorConn(){
     document.getElementById('synctxt').textContent=ok?'🟢 Todos os dispositivos sincronizados':'🟡 Reconectando…';
   });
 }
-function writeRoom(){if(db)db.ref(rpath+'/room').set(room);else localStorage.setItem('sese_r',JSON.stringify(room));}
-function openSetup(){document.getElementById('ov-setup').classList.add('open');}
+function handleFirebaseError(error){
+  const denied=(error?.code||'').toLowerCase().includes('permission')||(error?.message||'').toLowerCase().includes('permission');
+  if(denied){firebaseDenied=true;db=null;}
+  const d=document.getElementById('cdot');
+  d.className='dot err';
+  d.title=denied?'Firebase sem permissão pública':'Firebase indisponível';
+  document.getElementById('synctxt').textContent=denied?'🔴 Firebase bloqueado pelas regras':'🔴 Sem conexão — dados salvos neste dispositivo';
+  if(!firebaseErrorShown){
+    toast(denied?'O Firebase precisa estar com leitura e gravação públicas':'Sem conexão com o Firebase; usando este dispositivo','err');
+    firebaseErrorShown=true;
+  }
+}
+function saveLocal(){
+  localStorage.setItem('sese_r_'+rpath,JSON.stringify(room));
+  localStorage.setItem('sese_m_'+rpath,JSON.stringify(meetings));
+}
+function loadLocal(){
+  const oldRoom=rpath===DEFAULT_ROOM_ID?localStorage.getItem('sese_r'):null;
+  const oldMeetings=rpath===DEFAULT_ROOM_ID?localStorage.getItem('sese_m'):null;
+  try{const r=JSON.parse(localStorage.getItem('sese_r_'+rpath)||oldRoom);if(r)room={...room,...r};}catch{}
+  try{const m=JSON.parse(localStorage.getItem('sese_m_'+rpath)||oldMeetings);if(Array.isArray(m))meetings=m;}catch{}
+}
+function writeRoom(){
+  saveLocal();
+  if(db)db.ref(rpath+'/room').set(room).catch(handleFirebaseError);
+}
+function renderEnvironment(){
+  const work=rpath==='work-station';
+  document.body.classList.toggle('work-station-mode',work);
+  const meetingBtn=document.getElementById('roomBtnMeeting'),workBtn=document.getElementById('roomBtnWork');
+  meetingBtn.classList.toggle('active',!work);meetingBtn.setAttribute('aria-selected',String(!work));
+  workBtn.classList.toggle('active',work);workBtn.setAttribute('aria-selected',String(work));
+  document.getElementById('activeEnvName').textContent=ROOMS[rpath].label;
+  document.getElementById('activeEnvIcon').innerHTML=work
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8m-4-4v4"/><circle cx="12" cy="10" r="2"/></svg>'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="10" width="18" height="8" rx="2"/><path d="M7 10V7m10 3V7M5 21v-3m14 3v-3"/><circle cx="7" cy="5" r="2"/><circle cx="17" cy="5" r="2"/></svg>';
+  document.title=ROOMS[rpath].label+' – SESÉ';
+}
+function switchRoom(id){
+  if(!ROOMS[id]||id===rpath)return;
+  if(roomRef)roomRef.off();
+  if(meetingsRef)meetingsRef.off();
+  rpath=id;room=newRoom(rpath);meetings=[];cancelTarget=null;
+  loadLocal();
+  try{const url=new URL(location.href);url.searchParams.set('sala',rpath);history.replaceState(null,'',url);}catch{}
+  document.getElementById('cdot').className='dot wait';
+  document.getElementById('synctxt').textContent=db?'Trocando ambiente…':'Dados deste dispositivo';
+  renderEnvironment();renderStatus();renderAgenda();updateQR();
+  if(db)startListeners();
+  toast('Ambiente: '+ROOMS[rpath].label,'info');
+}
 
 /* ── HELPERS ── */
 function today(){return new Date().toISOString().slice(0,10);}
@@ -419,6 +497,7 @@ function setStatus(s){
 
 /* ── RENDER STATUS ── */
 function renderStatus(){
+  renderEnvironment();
   const{s}=effS();
   document.getElementById('scard').className='sc '+(s==='busy'?'busy':s==='reserved'?'reserved':'');
   const pill=document.getElementById('spill');
@@ -426,7 +505,7 @@ function renderStatus(){
   document.getElementById('slbl').textContent={free:'Disponível',busy:'Ocupada',reserved:'Reservada'}[s];
   document.getElementById('scn').textContent=room.name||'—';
   document.getElementById('scf').textContent=room.floor||'—';
-  document.getElementById('scap').textContent=(room.cap||'—')+' pessoa'+((room.cap||0)!==1?'s':'');
+  document.getElementById('scap').textContent=room.cap?room.cap+' pessoa'+(room.cap!==1?'s':''):'Capacidade não informada';
   document.getElementById('sresp').textContent=room.resp||'—';
   document.getElementById('hdn').textContent=room.name||'—';
   ['qbok','qbred','qbwrn'].forEach(id=>document.getElementById(id).classList.remove('on'));
@@ -481,8 +560,13 @@ function saveMeet(){
   const conflict=meetings.find(m=>m.status==='scheduled'&&m.date===date&&toM(start)<toM(m.end)&&toM(end)>toM(m.start));
   if(conflict){toast(`Conflito com "${conflict.title}" (${conflict.start}–${conflict.end})`,'err');return;}
   const data={title,date,start,end,resp:document.getElementById('mr').value.trim(),participants:document.getElementById('mp').value.trim(),notes:document.getElementById('mn').value.trim(),status:'scheduled'};
-  if(db){db.ref(rpath+'/meetings').push(data);}
-  else{meetings.push({...data,_k:'l'+Date.now()});renderAgenda();renderStatus();}
+  if(db){
+    db.ref(rpath+'/meetings').push(data).catch(error=>{
+      handleFirebaseError(error);
+      meetings.push({...data,_k:'l'+Date.now()});saveLocal();renderAgenda();renderStatus();
+    });
+  }
+  else{meetings.push({...data,_k:'l'+Date.now()});saveLocal();renderAgenda();renderStatus();}
   closeOv('ov-meet');
   toast('Reunião agendada: '+title,'ok');
 }
@@ -492,8 +576,11 @@ function openCancel(key,title){
   document.getElementById('ov-conf').classList.add('open');
 }
 function doCancel(){
-  if(db&&cancelTarget){db.ref(rpath+'/meetings/'+cancelTarget).update({status:'cancelled'});}
-  else{const m=meetings.find(m=>m._k===cancelTarget);if(m)m.status='cancelled';renderAgenda();renderStatus();}
+  if(db&&cancelTarget){db.ref(rpath+'/meetings/'+cancelTarget).update({status:'cancelled'}).catch(error=>{
+    handleFirebaseError(error);
+    const m=meetings.find(m=>m._k===cancelTarget);if(m)m.status='cancelled';saveLocal();renderAgenda();renderStatus();
+  });}
+  else{const m=meetings.find(m=>m._k===cancelTarget);if(m)m.status='cancelled';saveLocal();renderAgenda();renderStatus();}
   closeOv('ov-conf');toast('Reunião cancelada','info');cancelTarget=null;
 }
 
@@ -520,17 +607,17 @@ function saveRoom(){
 /* ── QR ── */
 function updateQR(){
   const base=room.appUrl||location.href.split('?')[0];
-  const data=encodeURIComponent(base+'?sala='+encodeURIComponent(room.name));
+  const data=encodeURIComponent(base+'?sala='+encodeURIComponent(rpath));
   const src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data}&bgcolor=ffffff&color=1a1e38&margin=1&qzone=1`;
   document.getElementById('qrimg').src=src;
   document.getElementById('qrn').textContent=room.name||'—';
-  document.getElementById('qrf').textContent=room.floor||'—';
+  document.getElementById('qrfloor').textContent=room.floor||'—';
   document.getElementById('pn').textContent=room.name||'—';
   document.getElementById('pf').textContent=room.floor||'—';
   document.getElementById('pqr').src=`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${data}&bgcolor=ffffff&color=1a1e38&margin=1&qzone=1`;
 }
 function printQR(){document.getElementById('parea').style.display='flex';window.print();setTimeout(()=>document.getElementById('parea').style.display='none',600);}
-function copyLink(){const base=room.appUrl||location.href.split('?')[0],url=base+'?sala='+encodeURIComponent(room.name);navigator.clipboard?.writeText(url).then(()=>toast('Link copiado!','ok')).catch(()=>{const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();toast('Link copiado!','ok');});}
+function copyLink(){const base=room.appUrl||location.href.split('?')[0],url=base+'?sala='+encodeURIComponent(rpath);navigator.clipboard?.writeText(url).then(()=>toast('Link copiado!','ok')).catch(()=>{const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();toast('Link copiado!','ok');});}
 
 /* ── TABS ── */
 function goTab(t){
@@ -562,9 +649,9 @@ function toast(msg,type='info'){
 
 /* ── INIT ── */
 (function(){
-  const saved=localStorage.getItem('sese_fb');
-  if(saved){try{const c=JSON.parse(saved);document.getElementById('skey').value=c.key;document.getElementById('surl').value=c.url;document.getElementById('spid').value=c.pid;document.getElementById('srid').value=c.rid;connectFB();}catch{openSetup();}}
-  else{openSetup();}
+  renderEnvironment();
+  loadLocal();
+  connectFB();
   renderStatus();renderAgenda();
 })();
 </script>
