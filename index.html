@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<meta name="app-build" content="20260904-1"/>
+<meta name="app-build" content="20260904-2"/>
 <title>SESÉ – Sala de Reunião</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -404,7 +404,26 @@ const ROOMS={
   'work-station':{label:'WORK STATION (SALA DE INTEGRAÇÃO)',name:'WORK STATION',cap:null,floor:'Sala de Integração',resp:'',resources:[]}
 };
 function getInitialRoomId(){const id=new URLSearchParams(location.search).get('sala');return ROOMS[id]?id:DEFAULT_ROOM_ID;}
-function newRoom(id){const r=ROOMS[id]||ROOMS[DEFAULT_ROOM_ID];return{name:r.name,cap:r.cap,floor:r.floor,resp:r.resp,resources:[...r.resources],desc:'',appUrl:location.href.split('?')[0],manualStatus:null};}
+function getCurrentIndexUrl(){
+  try{
+    const url=new URL(location.href);
+    if(url.protocol!=='http:'&&url.protocol!=='https:')return'';
+    url.search='';url.hash='';
+    return url.href;
+  }catch{return'';}
+}
+function getAppBaseUrl(){
+  const current=getCurrentIndexUrl();
+  if(current)return current;
+  const saved=String((room&&room.appUrl)||'').trim();
+  return /^https?:\/\//i.test(saved)?saved:location.href.split(/[?#]/)[0];
+}
+function getRoomLink(){
+  const base=getAppBaseUrl();
+  try{const url=new URL(base);url.searchParams.set('sala',rpath);return url.href;}
+  catch{return base+'?sala='+encodeURIComponent(rpath);}
+}
+function newRoom(id){const r=ROOMS[id]||ROOMS[DEFAULT_ROOM_ID];return{name:r.name,cap:r.cap,floor:r.floor,resp:r.resp,resources:[...r.resources],desc:'',appUrl:getCurrentIndexUrl()||location.href.split(/[?#]/)[0],manualStatus:null};}
 let rpath=getInitialRoomId(),room=newRoom(rpath);
 let meetings=[],cancelTarget=null,db=null,roomRef=null,meetingsRef=null,firebaseDenied=false,firebaseErrorShown=false;
 
@@ -424,7 +443,15 @@ function startListeners(){
   meetingsRef=db.ref(rpath+'/meetings');
   roomRef.on('value',snap=>{
     const d=snap.val();
-    if(d){room={...room,...d};saveLocal();renderStatus();}
+    if(d){
+      room={...room,...d};
+      const current=getCurrentIndexUrl();
+      if(current&&room.appUrl!==current){
+        room.appUrl=current;
+        db.ref(rpath+'/room/appUrl').set(current).catch(handleFirebaseError);
+      }
+      saveLocal();renderStatus();updateQR();
+    }
     else db.ref(rpath+'/room').set(room).catch(handleFirebaseError);
   },handleFirebaseError);
   meetingsRef.on('value',snap=>{
@@ -633,7 +660,7 @@ function fillEdit(){
   document.getElementById('efl').value=room.floor||'1º Andar';
   document.getElementById('eresp').value=room.resp||'';
   document.getElementById('edesc').value=room.desc||'';
-  document.getElementById('eurl').value=room.appUrl||'';
+  document.getElementById('eurl').value=getAppBaseUrl();
   const rc=document.getElementById('eres');
   rc.innerHTML=RES.map(r=>{const on=(room.resources||[]).includes(r);return`<label class="rc ${on?'on':''}"><input type="checkbox" value="${r}" ${on?'checked':''} onchange="this.closest('label').classList.toggle('on',this.checked)">${r}</label>`;}).join('');
 }
@@ -641,15 +668,14 @@ function saveRoom(){
   const name=document.getElementById('en').value.trim(),cap=parseInt(document.getElementById('ecap').value);
   if(!name){toast('Informe o nome da sala','err');return;}
   if(!cap||cap<1){toast('Informe a capacidade','err');return;}
-  room.name=name;room.cap=cap;room.floor=document.getElementById('efl').value;room.resp=document.getElementById('eresp').value.trim();room.desc=document.getElementById('edesc').value.trim();room.appUrl=document.getElementById('eurl').value.trim()||location.href.split('?')[0];room.resources=[...document.querySelectorAll('#eres input:checked')].map(i=>i.value);
+  room.name=name;room.cap=cap;room.floor=document.getElementById('efl').value;room.resp=document.getElementById('eresp').value.trim();room.desc=document.getElementById('edesc').value.trim();room.appUrl=getCurrentIndexUrl()||document.getElementById('eurl').value.trim()||location.href.split(/[?#]/)[0];room.resources=[...document.querySelectorAll('#eres input:checked')].map(i=>i.value);
   writeRoom();renderStatus();updateQR();
   toast('Sala atualizada em todos os dispositivos!','ok');
 }
 
 /* ── QR ── */
 function updateQR(){
-  const base=room.appUrl||location.href.split('?')[0];
-  const data=encodeURIComponent(base+'?sala='+encodeURIComponent(rpath));
+  const data=encodeURIComponent(getRoomLink());
   const src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data}&bgcolor=ffffff&color=1a1e38&margin=1&qzone=1`;
   document.getElementById('qrimg').src=src;
   document.getElementById('qrn').textContent=room.name||'—';
@@ -659,7 +685,7 @@ function updateQR(){
   document.getElementById('pqr').src=`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${data}&bgcolor=ffffff&color=1a1e38&margin=1&qzone=1`;
 }
 function printQR(){document.getElementById('parea').style.display='flex';window.print();setTimeout(()=>document.getElementById('parea').style.display='none',600);}
-function copyLink(){const base=room.appUrl||location.href.split('?')[0],url=base+'?sala='+encodeURIComponent(rpath);navigator.clipboard?.writeText(url).then(()=>toast('Link copiado!','ok')).catch(()=>{const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();toast('Link copiado!','ok');});}
+function copyLink(){const url=getRoomLink();navigator.clipboard?.writeText(url).then(()=>toast('Link copiado!','ok')).catch(()=>{const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();toast('Link copiado!','ok');});}
 
 /* ── TABS ── */
 function goTab(t){
@@ -690,7 +716,7 @@ function toast(msg,type='info'){
 }
 
 /* ── VERIFICAÇÃO DE ATUALIZAÇÃO (evita tela travada em versão antiga no celular) ── */
-const APP_BUILD='20260904-1';
+const APP_BUILD='20260904-2';
 let updateBannerShown=false;
 async function checkForUpdate(){
   if(updateBannerShown)return;
